@@ -1,6 +1,6 @@
 package modelo.DTO;
 
-public class UsuarioDTO {
+public class UsuarioDto {
 
     private int id;
     private String nombreUsuario;
