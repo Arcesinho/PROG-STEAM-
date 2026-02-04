@@ -1,80 +1,68 @@
 package modelo.dto;
 
+import modelo.enums.EstadoCompraEnum;
+import modelo.enums.MetodoPagoCompraEnum;
+
+import java.time.LocalDateTime;
+
 public class CompraDto {
 
     //Variables
 
     private int id;
-    private String fechaCompra;
+    private LocalDateTime fechaCompra;
     private Double precioSinDescuento;
     private int descuento;
-    private enum METODOPAGO{
-        TARJETA_CREDITO, PAYPAL, CARTERA_STEAM, TRANSFERENCIA, OTROS}
-    private enum ESTADO{
-        COMPLETADA, REEMBOLSADA}
     private UsuarioDto usuario;
     private JuegoDto juego;
+    private MetodoPagoCompraEnum.METODOPAGO metodopago;
+    private EstadoCompraEnum.ESTADO estado;
 
     //Constructor
 
-
-    public CompraDto(int id, String fechaCompra, Double precioSinDescuento, int descuento, UsuarioDto usuario, JuegoDto juego) {
+    public CompraDto(int id, LocalDateTime fechaCompra, Double precioSinDescuento, int descuento, UsuarioDto usuario, JuegoDto juego, MetodoPagoCompraEnum.METODOPAGO metodopago, EstadoCompraEnum.ESTADO estado) {
         this.id = id;
         this.fechaCompra = fechaCompra;
         this.precioSinDescuento = precioSinDescuento;
         this.descuento = descuento;
         this.usuario = usuario;
         this.juego = juego;
+        this.metodopago = metodopago;
+        this.estado = estado;
     }
 
-    //Getters y setters
+    //Getters
 
 
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getFechaCompra() {
+    public LocalDateTime getFechaCompra() {
         return fechaCompra;
-    }
-
-    public void setFechaCompra(String fechaCompra) {
-        this.fechaCompra = fechaCompra;
     }
 
     public Double getPrecioSinDescuento() {
         return precioSinDescuento;
     }
 
-    public void setPrecioSinDescuento(Double precioSinDescuento) {
-        this.precioSinDescuento = precioSinDescuento;
-    }
-
     public int getDescuento() {
         return descuento;
-    }
-
-    public void setDescuento(int descuento) {
-        this.descuento = descuento;
     }
 
     public UsuarioDto getUsuario() {
         return usuario;
     }
 
-    public void setUsuario(UsuarioDto usuario) {
-        this.usuario = usuario;
-    }
-
     public JuegoDto getJuego() {
         return juego;
     }
 
-    public void setJuego(JuegoDto juego) {
-        this.juego = juego;
+    public MetodoPagoCompraEnum.METODOPAGO getMetodopago() {
+        return metodopago;
+    }
+
+    public EstadoCompraEnum.ESTADO getEstado() {
+        return estado;
     }
 }

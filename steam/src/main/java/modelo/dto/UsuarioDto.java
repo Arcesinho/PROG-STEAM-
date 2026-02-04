@@ -1,28 +1,29 @@
 package modelo.dto;
 
-public class UsuarioDto {
+import modelo.enums.EstadoCuentaEnum;
+import java.time.LocalDateTime;
 
     //Variables
 
-    private int id;
-    private String nombreUsuario;
-    private String email;
-    private String contrasenia;
-    private String nombreReal;
-    private String pais;
-    private String fechaNacimiento;
-    private String fechaRegistro;
-    private String avatar;
-    private Double saldoCartera;
-    private enum ESTADOCUENTA {
-        ACTIVA, SUSPENDIDA, BANEADA
-    }
+public class UsuarioDto {
+
+        private int id;
+        private String nombre;
+        private String email;
+        private String contrasenia;
+        private String nombreReal;
+        private String pais;
+        private LocalDateTime fechaNacimiento;
+        private LocalDateTime fechaRegistro;
+        private String avatar;
+        private Double saldoCartera;
+        private EstadoCuentaEnum.ESTADOCUENTA estado;
 
     //Constructor
 
-    public UsuarioDto(int id, String nombreUsuario, String email, String contrasenia, String nombreReal, String pais, String fechaNacimiento, String fechaRegistro, String avatar, Double saldoCartera) {
+    public UsuarioDto(int id, String nombre, String email, String contrasenia, String nombreReal, String pais, LocalDateTime fechaNacimiento, LocalDateTime fechaRegistro, String avatar, Double saldoCartera, EstadoCuentaEnum.ESTADOCUENTA estado) {
         this.id = id;
-        this.nombreUsuario = nombreUsuario;
+        this.nombre = nombre;
         this.email = email;
         this.contrasenia = contrasenia;
         this.nombreReal = nombreReal;
@@ -31,90 +32,54 @@ public class UsuarioDto {
         this.fechaRegistro = fechaRegistro;
         this.avatar = avatar;
         this.saldoCartera = saldoCartera;
+        this.estado = estado;
     }
 
     //Getters
-    //Setters
 
 
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getNombreUsuario() {
-        return nombreUsuario;
-    }
-
-    public void setNombreUsuario(String nombreUsuario) {
-        this.nombreUsuario = nombreUsuario;
+    public String getNombre() {
+        return nombre;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public String getContrasenia() {
         return contrasenia;
-    }
-
-    public void setContrasenia(String contrasenia) {
-        this.contrasenia = contrasenia;
     }
 
     public String getNombreReal() {
         return nombreReal;
     }
 
-    public void setNombreReal(String nombreReal) {
-        this.nombreReal = nombreReal;
-    }
-
     public String getPais() {
         return pais;
     }
 
-    public void setPais(String pais) {
-        this.pais = pais;
-    }
-
-    public String getFechaNacimiento() {
+    public LocalDateTime getFechaNacimiento() {
         return fechaNacimiento;
     }
 
-    public void setFechaNacimiento(String fechaNacimiento) {
-        this.fechaNacimiento = fechaNacimiento;
-    }
-
-    public String getFechaRegistro() {
+    public LocalDateTime getFechaRegistro() {
         return fechaRegistro;
-    }
-
-    public void setFechaRegistro(String fechaRegistro) {
-        this.fechaRegistro = fechaRegistro;
     }
 
     public String getAvatar() {
         return avatar;
     }
 
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
-    }
-
     public Double getSaldoCartera() {
         return saldoCartera;
     }
 
-    public void setSaldoCartera(Double saldoCartera) {
-        this.saldoCartera = saldoCartera;
+    public EstadoCuentaEnum.ESTADOCUENTA getEstado() {
+        return estado;
     }
 }
 

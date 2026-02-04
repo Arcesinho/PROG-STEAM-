@@ -1,23 +1,25 @@
 package modelo.dto;
 
+import modelo.enums.EstadoReseniaEnum;
+
+import java.time.LocalDateTime;
+
 public class ReseniaDto {
 
     //Variables
-
     private int id;
     private boolean recomendado;
     private String textoResenia;
-    private int horasHastaResenia;
-    private String fechaPublicacion;
-    private String fechaUltimaEdicion;
-    public enum ESTADO{
-        PUBLICADA, OCULTA, ELIMINADA}
-    public ESTADO estado;
+    private Double horasHastaResenia;
+    private LocalDateTime fechaPublicacion;
+    private LocalDateTime fechaUltimaEdicion;
+    private EstadoReseniaEnum.ESTADO estado;
     private UsuarioDto usuario;
     private JuegoDto juego;
 
+    //Constructor
 
-    public ReseniaDto(int id, boolean recomendado, String textoResenia, int horasHastaResenia, String fechaPublicacion, String fechaUltimaEdicion, ESTADO estado, UsuarioDto usuario, JuegoDto juego) {
+    public ReseniaDto(int id, boolean recomendado, String textoResenia, Double horasHastaResenia, LocalDateTime fechaPublicacion, LocalDateTime fechaUltimaEdicion, EstadoReseniaEnum.ESTADO estado, UsuarioDto usuario, JuegoDto juego) {
         this.id = id;
         this.recomendado = recomendado;
         this.textoResenia = textoResenia;
@@ -28,6 +30,9 @@ public class ReseniaDto {
         this.usuario = usuario;
         this.juego = juego;
     }
+
+    //Getters
+
 
     public int getId() {
         return id;
@@ -41,19 +46,19 @@ public class ReseniaDto {
         return textoResenia;
     }
 
-    public int getHorasHastaResenia() {
+    public Double getHorasHastaResenia() {
         return horasHastaResenia;
     }
 
-    public String getFechaPublicacion() {
+    public LocalDateTime getFechaPublicacion() {
         return fechaPublicacion;
     }
 
-    public String getFechaUltimaEdicion() {
+    public LocalDateTime getFechaUltimaEdicion() {
         return fechaUltimaEdicion;
     }
 
-    public ESTADO getEstado() {
+    public EstadoReseniaEnum.ESTADO getEstado() {
         return estado;
     }
 

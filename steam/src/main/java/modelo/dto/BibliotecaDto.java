@@ -7,73 +7,56 @@ public class BibliotecaDto {
 
     //Variables
 
+    public enum ESTADO_INSTALACION{INSTALADO, NO_INSTALADO}
     private int id;
     private String fechaAdquisicion;
-    private int horasJuego;
+    private Double horasJuego;
     private String ultimaFechaJuego;
-    private enum ESTADO_INSTALACION{
-        INSTALADO, NO_INSTALADO}
     private UsuarioDto usuario;
     private JuegoDto juego;
+    private ESTADO_INSTALACION estadoInstalacion;
 
     //Constructor
 
-    public BibliotecaDto(int id, String fechaAdquisicion, int horasJuego, String ultimaFechaJuego, UsuarioDto usuario, JuegoDto juego) {
+    public BibliotecaDto(int id, String fechaAdquisicion, Double horasJuego, String ultimaFechaJuego, UsuarioDto usuario, JuegoDto juego, ESTADO_INSTALACION estadoInstalacion) {
         this.id = id;
         this.fechaAdquisicion = fechaAdquisicion;
         this.horasJuego = horasJuego;
         this.ultimaFechaJuego = ultimaFechaJuego;
         this.usuario = usuario;
         this.juego = juego;
+        this.estadoInstalacion = estadoInstalacion;
     }
+
 
     //Getters y setters
 
+
     public int getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getFechaAdquisicion() {
         return fechaAdquisicion;
     }
 
-    public void setFechaAdquisicion(String fechaAdquisicion) {
-        this.fechaAdquisicion = fechaAdquisicion;
-    }
-
-    public int getHorasJuego() {
+    public Double getHorasJuego() {
         return horasJuego;
-    }
-
-    public void setHorasJuego(int horasJuego) {
-        this.horasJuego = horasJuego;
     }
 
     public String getUltimaFechaJuego() {
         return ultimaFechaJuego;
     }
 
-    public void setUltimaFechaJuego(String ultimaFechaJuego) {
-        this.ultimaFechaJuego = ultimaFechaJuego;
-    }
-
     public UsuarioDto getUsuario() {
         return usuario;
-    }
-
-    public void setUsuario(UsuarioDto usuario) {
-        this.usuario = usuario;
     }
 
     public JuegoDto getJuego() {
         return juego;
     }
 
-    public void setJuego(JuegoDto juego) {
-        this.juego = juego;
+    public ESTADO_INSTALACION getEstadoInstalacion() {
+        return estadoInstalacion;
     }
 }

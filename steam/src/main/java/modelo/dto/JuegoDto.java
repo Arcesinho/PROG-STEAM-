@@ -1,101 +1,85 @@
 package modelo.dto;
 
+import modelo.enums.CategoriaJuegoEnum;
+import modelo.enums.EstadoJuegoEnum;
+import modelo.enums.PegiJuegoEnum;
+
+import java.time.LocalDateTime;
+
 public class JuegoDto {
 
     //Variables
-
     private int id;
-    private String tituloJ;
+    private String tituloJuego;
     private String descripcion;
     private String desarrollador;
-    private String fechaLanzamiento;
+    private LocalDateTime fechaLanzamiento;
     private Double precioBase;
     private int descuentoActual;
-    private enum CATEGORIA {
-        ACCION, AVENTURA, RPG, SHOOTER}
-    private enum pegi{
-        PEGI_3, PEGI_7, PEGI_12, PEGI_16, PEGI_18}
     private String[] idiomas;
-    private enum ESTADO{
-        DISPONIBLE, PREVENTA, ACCESO_ANTICIPADO, NO_DISPONIBLE}
+    private EstadoJuegoEnum.ESTADO estado;
+    private PegiJuegoEnum.PEGI pegi;
+    private CategoriaJuegoEnum.CATEGORIA categoria;
 
     //Constructor
 
-    public JuegoDto(int id, String tituloJ, String descripcion, String desarrollador, String fechaLanzamiento, Double precioBase, int descuentoActual, String[] idiomas) {
+    public JuegoDto(int id, String tituloJuego, String descripcion, String desarrollador, LocalDateTime fechaLanzamiento, Double precioBase, int descuentoActual, String[] idiomas, EstadoJuegoEnum.ESTADO estado, PegiJuegoEnum.PEGI pegi, CategoriaJuegoEnum.CATEGORIA categoria) {
         this.id = id;
-        this.tituloJ = tituloJ;
+        this.tituloJuego = tituloJuego;
         this.descripcion = descripcion;
         this.desarrollador = desarrollador;
         this.fechaLanzamiento = fechaLanzamiento;
         this.precioBase = precioBase;
         this.descuentoActual = descuentoActual;
         this.idiomas = idiomas;
+        this.estado = estado;
+        this.pegi = pegi;
+        this.categoria = categoria;
     }
 
     //Getters
-    //Setters
+
 
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getTituloJ() {
-        return tituloJ;
-    }
-
-    public void setTituloJ(String tituloJ) {
-        this.tituloJ = tituloJ;
+    public String getTituloJuego() {
+        return tituloJuego;
     }
 
     public String getDescripcion() {
         return descripcion;
     }
 
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
     public String getDesarrollador() {
         return desarrollador;
     }
 
-    public void setDesarrollador(String desarrollador) {
-        this.desarrollador = desarrollador;
-    }
-
-    public String getFechaLanzamiento() {
+    public LocalDateTime getFechaLanzamiento() {
         return fechaLanzamiento;
-    }
-
-    public void setFechaLanzamiento(String fechaLanzamiento) {
-        this.fechaLanzamiento = fechaLanzamiento;
     }
 
     public Double getPrecioBase() {
         return precioBase;
     }
 
-    public void setPrecioBase(Double precioBase) {
-        this.precioBase = precioBase;
-    }
-
     public int getDescuentoActual() {
         return descuentoActual;
-    }
-
-    public void setDescuentoActual(int descuentoActual) {
-        this.descuentoActual = descuentoActual;
     }
 
     public String[] getIdiomas() {
         return idiomas;
     }
+    public EstadoJuegoEnum.ESTADO getEstado() {
+        return estado;
+    }
 
-    public void setIdiomas(String[] idiomas) {
-        this.idiomas = idiomas;
+    public PegiJuegoEnum.PEGI getPegi() {
+        return pegi;
+    }
+
+    public CategoriaJuegoEnum.CATEGORIA getCategoria() {
+        return categoria;
     }
 }
