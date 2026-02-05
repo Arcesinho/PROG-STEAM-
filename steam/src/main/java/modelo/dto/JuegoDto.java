@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 public class JuegoDto {
 
     //Variables
-    private int id;
+    private Long id;
     private String tituloJuego;
     private String descripcion;
     private String desarrollador;
@@ -23,7 +23,7 @@ public class JuegoDto {
 
     //Constructor
 
-    public JuegoDto(int id, String tituloJuego, String descripcion, String desarrollador, LocalDateTime fechaLanzamiento, Double precioBase, int descuentoActual, String[] idiomas, EstadoJuegoEnum.ESTADO estado, PegiJuegoEnum.PEGI pegi, CategoriaJuegoEnum.CATEGORIA categoria) {
+    public JuegoDto(Long id, String tituloJuego, String descripcion, String desarrollador, LocalDateTime fechaLanzamiento, Double precioBase, int descuentoActual, String[] idiomas, EstadoJuegoEnum.ESTADO estado, PegiJuegoEnum.PEGI pegi, CategoriaJuegoEnum.CATEGORIA categoria) {
         this.id = id;
         this.tituloJuego = tituloJuego;
         this.descripcion = descripcion;
@@ -40,7 +40,7 @@ public class JuegoDto {
     //Getters
 
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 

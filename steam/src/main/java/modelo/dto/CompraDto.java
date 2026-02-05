@@ -9,7 +9,7 @@ public class CompraDto {
 
     //Variables
 
-    private int id;
+    private Long id;
     private LocalDateTime fechaCompra;
     private Double precioSinDescuento;
     private int descuento;
@@ -20,7 +20,7 @@ public class CompraDto {
 
     //Constructor
 
-    public CompraDto(int id, LocalDateTime fechaCompra, Double precioSinDescuento, int descuento, UsuarioDto usuario, JuegoDto juego, MetodoPagoCompraEnum.METODOPAGO metodopago, EstadoCompraEnum.ESTADO estado) {
+    public CompraDto(Long id, LocalDateTime fechaCompra, Double precioSinDescuento, int descuento, UsuarioDto usuario, JuegoDto juego, MetodoPagoCompraEnum.METODOPAGO metodopago, EstadoCompraEnum.ESTADO estado) {
         this.id = id;
         this.fechaCompra = fechaCompra;
         this.precioSinDescuento = precioSinDescuento;
@@ -34,7 +34,7 @@ public class CompraDto {
     //Getters
 
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 

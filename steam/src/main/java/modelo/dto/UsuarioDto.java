@@ -7,8 +7,8 @@ import java.time.LocalDateTime;
 
 public class UsuarioDto {
 
-        private int id;
-        private String nombre;
+        private Long id;
+        private String nombreUsuario;
         private String email;
         private String contrasenia;
         private String nombreReal;
@@ -21,9 +21,9 @@ public class UsuarioDto {
 
     //Constructor
 
-    public UsuarioDto(int id, String nombre, String email, String contrasenia, String nombreReal, String pais, LocalDateTime fechaNacimiento, LocalDateTime fechaRegistro, String avatar, Double saldoCartera, EstadoCuentaEnum.ESTADOCUENTA estado) {
+    public UsuarioDto(Long id, String nombre, String email, String contrasenia, String nombreReal, String pais, LocalDateTime fechaNacimiento, LocalDateTime fechaRegistro, String avatar, Double saldoCartera, EstadoCuentaEnum.ESTADOCUENTA estado) {
         this.id = id;
-        this.nombre = nombre;
+        this.nombreUsuario = nombre;
         this.email = email;
         this.contrasenia = contrasenia;
         this.nombreReal = nombreReal;
@@ -38,12 +38,12 @@ public class UsuarioDto {
     //Getters
 
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public String getNombre() {
-        return nombre;
+    public String getNombreUsuario() {
+        return nombreUsuario;
     }
 
     public String getEmail() {

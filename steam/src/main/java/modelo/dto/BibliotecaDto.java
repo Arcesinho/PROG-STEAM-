@@ -8,7 +8,7 @@ public class BibliotecaDto {
     //Variables
 
     public enum ESTADO_INSTALACION{INSTALADO, NO_INSTALADO}
-    private int id;
+    private Long id;
     private String fechaAdquisicion;
     private Double horasJuego;
     private String ultimaFechaJuego;
@@ -18,7 +18,7 @@ public class BibliotecaDto {
 
     //Constructor
 
-    public BibliotecaDto(int id, String fechaAdquisicion, Double horasJuego, String ultimaFechaJuego, UsuarioDto usuario, JuegoDto juego, ESTADO_INSTALACION estadoInstalacion) {
+    public BibliotecaDto(Long id, String fechaAdquisicion, Double horasJuego, String ultimaFechaJuego, UsuarioDto usuario, JuegoDto juego, ESTADO_INSTALACION estadoInstalacion) {
         this.id = id;
         this.fechaAdquisicion = fechaAdquisicion;
         this.horasJuego = horasJuego;
@@ -32,7 +32,7 @@ public class BibliotecaDto {
     //Getters y setters
 
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
