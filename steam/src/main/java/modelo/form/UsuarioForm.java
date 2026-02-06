@@ -54,17 +54,16 @@ public record UsuarioForm(String nombreUsuario, String email, String contrasenia
         if (nombreUsuario == null) {
             errores.add(new ErrorDto("nombreUsuario", ErrorType.REQUERIDO));
         }
-        assert nombreUsuario != null;
-        if (Character.isDigit(nombreUsuario.charAt(0))) {
+        if (nombreUsuario == null || Character.isDigit(nombreUsuario.charAt(0))) {
             errores.add(new ErrorDto("nombreUsuario", ErrorType.NO_EMPEZAR_POR_NUMERO));
         }
-        if (!nombreUsuario.matches("[a-zA-Z]+-+_]")){
+        if (nombreUsuario == null || !nombreUsuario.matches("[a-zA-Z]+-+_]")){
             errores.add(new ErrorDto("nombreUsuario", ErrorType.FORMATO_INVALIDO));
         }
-        if(nombreUsuario.length()<3){
+        if(nombreUsuario == null ||nombreUsuario.length()<3){
             errores.add(new ErrorDto("nombreUsuario", ErrorType.VALOR_DEMASIADO_BAJO));
         }
-        if(nombreUsuario.length()>20){
+        if(nombreUsuario == null ||nombreUsuario.length()>20){
             errores.add(new ErrorDto("nombreUsuario", ErrorType.VALOR_DEMASIADO_ALTO));
         }
 
@@ -82,8 +81,7 @@ public record UsuarioForm(String nombreUsuario, String email, String contrasenia
         if (contrasenia == null) {
             errores.add(new ErrorDto("contrasenia", ErrorType.REQUERIDO));
         }
-        assert contrasenia != null;
-        if(contrasenia.length()<8){
+        if(contrasenia == null || contrasenia.length()<8){
             errores.add(new ErrorDto("contrasenia", ErrorType.VALOR_DEMASIADO_BAJO));
         }
         if (!(mayusculas >= 1 && minusculas >= 1 && digitos >= 1)) {
@@ -95,11 +93,10 @@ public record UsuarioForm(String nombreUsuario, String email, String contrasenia
         if(nombreReal==null){
             errores.add(new ErrorDto("nombreReal", ErrorType.REQUERIDO));
         }
-        assert nombreReal!= null;
-        if(nombreReal.length()<2){
+        if(nombreReal == null|| nombreReal.length()<2){
             errores.add(new ErrorDto("nombreReal", ErrorType.VALOR_DEMASIADO_BAJO));
         }
-        if(nombreReal.length()>50){
+        if(nombreReal == null|| nombreReal.length()>50){
             errores.add(new ErrorDto("nombreReal", ErrorType.VALOR_DEMASIADO_ALTO));
         }
 
@@ -108,8 +105,7 @@ public record UsuarioForm(String nombreUsuario, String email, String contrasenia
         if (pais == null) {
             errores.add(new ErrorDto("pais", ErrorType.REQUERIDO));
         }
-        assert pais!= null;
-        if(!(pais.matches(String.valueOf(paisesValidos)))){
+        if(pais == null || !(pais.matches(String.valueOf(paisesValidos)))){
             errores.add(new ErrorDto("pais", ErrorType.NO_ENCONTRADO));
         }
 
@@ -118,7 +114,7 @@ public record UsuarioForm(String nombreUsuario, String email, String contrasenia
         if (fechaNacimiento == null) {
             errores.add(new ErrorDto("fechaNacimiento", ErrorType.REQUERIDO));
         }
-        assert fechaNacimiento != null;
+
 
         return errores;
     }
