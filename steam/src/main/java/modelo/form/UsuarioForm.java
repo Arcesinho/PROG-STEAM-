@@ -1,19 +1,15 @@
 package modelo.form;
 
-import modelo.enums.CategoriaJuegoEnum;
-import modelo.enums.EstadoCuentaEnum;
-import modelo.enums.EstadoJuegoEnum;
-import modelo.enums.PegiJuegoEnum;
+import modelo.enums.*;
 
-import java.util.Collections;
-import java.util.Locale;
+import java.time.Period;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDate;
 
-public record UsuarioForm(String nombreUsuario, String email, String contrasenia, String nombreReal, String pais, LocalDateTime fechaNacimiento, LocalDateTime fechaRegistro, String avatar, Double saldoCartera, EstadoCuentaEnum.ESTADOCUENTA estado) {
+public record UsuarioForm(String nombreUsuario, String email, String contrasenia, String nombreReal, String pais, LocalDate fechaNacimiento, Optional<String> avatar, Double saldoCartera, EstadoCuentaEnum.ESTADOCUENTA estado) {
 
     public List<ErrorDto> validar() {
 
@@ -46,7 +42,9 @@ public record UsuarioForm(String nombreUsuario, String email, String contrasenia
         }
         Collections.sort(paisesValidos);
 
+        //Calculo de años de la edad del usuario
 
+        Period edadEnAnios = Period.between(fechaNacimiento, LocalDate.now());
 
 
         //Validaciones del form para el nombreUsuario
@@ -113,6 +111,26 @@ public record UsuarioForm(String nombreUsuario, String email, String contrasenia
 
         if (fechaNacimiento == null) {
             errores.add(new ErrorDto("fechaNacimiento", ErrorType.REQUERIDO));
+        }
+        if(fechaNacimiento == null || edadEnAnios.getYears() < 13){
+            errores.add(new ErrorDto("fechaNacimiento", ErrorType.FECHA_NO_VALIDA));
+        }
+        if(fechaNacimiento == null || fechaNacimiento.isAfter(LocalDate.now())){
+            errores.add(new ErrorDto("fechaNacimiento", ErrorType.FECHA_NO_VALIDA));
+        }
+
+        //Validaciones del avatar
+
+        if(avatar.isPresent()){
+            if(avatar.stream().toList().size() > 100){
+                errores.add(new ErrorDto("avatar", ErrorType.VALOR_DEMASIADO_ALTO));
+            }
+        }
+
+        //Validaciones saldo
+
+        if(!(saldoCartera >= 0)){
+            errores.add(new ErrorDto("saldoCartera", ErrorType.VALOR_DEMASIADO_BAJO));
         }
 
 
