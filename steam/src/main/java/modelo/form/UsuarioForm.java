@@ -1,12 +1,12 @@
 package modelo.form;
 
 import modelo.enums.*;
+import recursos.ComprobarDosDecimales;
 
 import java.time.Period;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.time.LocalDateTime;
 import java.time.LocalDate;
 
 public record UsuarioForm(String nombreUsuario, String email, String contrasenia, String nombreReal, String pais, LocalDate fechaNacimiento, Optional<String> avatar, Double saldoCartera, EstadoCuentaEnum.ESTADOCUENTA estado) {
@@ -30,7 +30,7 @@ public record UsuarioForm(String nombreUsuario, String email, String contrasenia
             else if (Character.isDigit(c)) digitos++;
         }
 
-        //Lista paises validos
+        //Lista de paises válidos
 
         List<String> paisesValidos = new ArrayList<>();
 
@@ -132,12 +132,12 @@ public record UsuarioForm(String nombreUsuario, String email, String contrasenia
         if(!(saldoCartera >= 0)){
             errores.add(new ErrorDto("saldoCartera", ErrorType.VALOR_DEMASIADO_BAJO));
         }
+        if(!ComprobarDosDecimales.tieneDosOMenosDecimales(saldoCartera)){
+            errores.add(new ErrorDto("saldoCartera", ErrorType.FORMATO_INVALIDO));
+        }
 
 
         return errores;
     }
-
-
-
 
 }

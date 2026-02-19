@@ -3,11 +3,79 @@ package modelo.form;
 import modelo.enums.CategoriaJuegoEnum;
 import modelo.enums.EstadoJuegoEnum;
 import modelo.enums.PegiJuegoEnum;
+import recursos.ComprobarDosDecimales;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
-public record JuegoForm(String tituloJuego, String descripcion, String desarrollador, LocalDateTime fechaLanzamiento, Double precioBase, int descuentoActual, String[] idiomas, EstadoJuegoEnum.ESTADO estado, PegiJuegoEnum.PEGI pegi, CategoriaJuegoEnum.CATEGORIA categoria) {
+public record JuegoForm(String tituloJuego, Optional<String> descripcion, String desarrollador, LocalDateTime fechaLanzamiento, Double precioBase, int descuentoActual, String[] idiomas, EstadoJuegoEnum.ESTADO estado, PegiJuegoEnum.PEGI pegi, CategoriaJuegoEnum.CATEGORIA categoria) {
+
+    public List<ErrorDto> validar() {
+
+        var errores = new ArrayList<ErrorDto>();
+
+
+        //Validaciones Título
+
+
+        if (tituloJuego == null || tituloJuego.isEmpty()) {
+            errores.add(new ErrorDto("tituloJuego", ErrorType.REQUERIDO));
+        }
+        if(tituloJuego == null ||tituloJuego.length()<1){
+            errores.add(new ErrorDto("tituloJuego", ErrorType.VALOR_DEMASIADO_BAJO));
+        }
+        if(tituloJuego == null ||tituloJuego.length()>100){
+            errores.add(new ErrorDto("tituloJuego", ErrorType.VALOR_DEMASIADO_ALTO));
+        }
+
+        //Validacones Descripcion
+
+        if(descripcion.isPresent() || !(descripcion.stream().toList().size() > 2000)){
+            errores.add(new ErrorDto("descripcion", ErrorType.VALOR_DEMASIADO_ALTO));
+        }
+
+        //Validaciones Desarrolador
+
+        if (desarrollador == null || desarrollador.isEmpty()) {
+            errores.add(new ErrorDto("desarrollador", ErrorType.REQUERIDO));
+        }
+        if(desarrollador == null ||desarrollador.length()<2){
+            errores.add(new ErrorDto("desarrollador", ErrorType.VALOR_DEMASIADO_BAJO));
+        }
+        if(desarrollador == null ||desarrollador.length()>100){
+            errores.add(new ErrorDto("desarrollador", ErrorType.VALOR_DEMASIADO_ALTO));
+        }
+
+        //Validaciones fechaLanzamiento
+
+        if (fechaLanzamiento == null) {
+            errores.add( new ErrorDto("fechaLanzamiento", ErrorType.REQUERIDO));
+        }
+
+        //Validaciones precio base
+
+        if(precioBase == null){
+            errores.add(new ErrorDto("precioBase", ErrorType.REQUERIDO));
+        }
+        if(precioBase == null || !(precioBase >= 0)){
+            errores.add(new ErrorDto("precioBase", ErrorType.VALOR_DEMASIADO_BAJO));
+        }
+        if(precioBase == null || !(ComprobarDosDecimales.tieneDosOMenosDecimales(precioBase))){
+            errores.add(new ErrorDto("precioBase", ErrorType.FORMATO_INVALIDO));
+        }
+        if(precioBase == null || precioBase <0.00){
+            errores.add(new ErrorDto("precioBase", ErrorType.VALOR_DEMASIADO_BAJO));
+        }
+        if(precioBase == null || precioBase > 999.99){
+            errores.add(new ErrorDto("precioBase", ErrorType.VALOR_DEMASIADO_ALTO));
+        }
+
+        //Validaciones descuentoActual
 
 
 
+        return errores;
+    }
 }
