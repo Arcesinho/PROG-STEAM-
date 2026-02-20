@@ -1,0 +1,7 @@
+package org.adrian.modelo.enums;
+
+public class EstadoCuentaEnum {
+
+    public enum ESTADOCUENTA{ACTIVA, SUSPENDIDA, BANEADA}
+
+}
