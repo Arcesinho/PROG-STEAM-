@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public record JuegoForm(String tituloJuego, Optional<String> descripcion, String desarrollador, LocalDateTime fechaLanzamiento, Double precioBase, int descuentoActual, String[] idiomas, EstadoJuegoEnum.ESTADO estado, PegiJuegoEnum.PEGI pegi, CategoriaJuegoEnum.CATEGORIA categoria) {
+public record JuegoForm(String tituloJuego, Optional<String> descripcion, String desarrollador, LocalDateTime fechaLanzamiento, Double precioBase, Optional<Integer> descuentoActual,  PegiJuegoEnum.PEGI pegi, Optional<String[]> idiomas ,EstadoJuegoEnum.ESTADO estado, CategoriaJuegoEnum.CATEGORIA categoria) {
 
     public List<ErrorDto> validar() {
 
@@ -72,6 +72,36 @@ public record JuegoForm(String tituloJuego, Optional<String> descripcion, String
         }
 
         //Validaciones descuentoActual
+
+        var dA = descuentoActual.orElse(null);
+        if(dA == null || dA <0){
+            errores.add(new ErrorDto("descuentoActual", ErrorType.VALOR_DEMASIADO_BAJO));
+        }
+        if(dA == null || dA > 100){
+            errores.add(new ErrorDto("descuentoActual", ErrorType.VALOR_DEMASIADO_ALTO));
+        }
+
+        //Validaciones pegi
+
+        if(pegi == null){
+            errores.add(new ErrorDto("pegi", ErrorType.REQUERIDO));
+        }
+
+        //Validaciones Idiomas disponible
+
+        var i = idiomas.orElse(null);
+        if(i == null || i.length < 1){
+            errores.add(new ErrorDto("idiomas", ErrorType.VALOR_DEMASIADO_BAJO));
+        }
+        if(i == null || i.length > 200){
+            errores.add(new ErrorDto("idiomas", ErrorType.VALOR_DEMASIADO_ALTO));
+        }
+
+        //Validaciones estado
+
+        if(estado == null){
+            errores.add(new ErrorDto("estado", ErrorType.REQUERIDO));
+        }
 
 
 
