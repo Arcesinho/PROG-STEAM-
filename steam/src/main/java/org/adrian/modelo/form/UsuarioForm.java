@@ -122,10 +122,9 @@ public record UsuarioForm(String nombreUsuario, String email, String contrasenia
 
         //Validaciones del avatar
 
-        if(avatar.isPresent()){
-            if(avatar.stream().toList().size() > 100){
-                errores.add(new ErrorDto("avatar", ErrorType.VALOR_DEMASIADO_ALTO));
-            }
+        var av = avatar.orElse(null);
+        if(av == null || av.length() >100){
+            errores.add(new ErrorDto("avatar", ErrorType.VALOR_DEMASIADO_ALTO));
         }
 
         //Validaciones saldo
