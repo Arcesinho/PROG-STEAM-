@@ -4,6 +4,8 @@ package org.adrian.mapper;
 import org.adrian.modelo.dto.*;
 import org.adrian.modelo.entidad.*;
 
+import java.util.Optional;
+
 public class Mapper {
 
     public static UsuarioDto mapFrom(UsuarioEntidad entidad){
@@ -91,8 +93,5 @@ public class Mapper {
                 entidad.estado());
 
     }
-
-
-
 
 }
