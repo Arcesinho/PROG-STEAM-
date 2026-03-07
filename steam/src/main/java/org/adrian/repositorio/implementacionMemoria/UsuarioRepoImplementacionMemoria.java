@@ -23,7 +23,8 @@ public class UsuarioRepoImplementacionMemoria implements IUsuarioRepo {
     @Override
     public Optional<UsuarioEntidad> crear(UsuarioForm form) {
 
-        var usuario = new UsuarioEntidad(idCounter++, form.nombreUsuario(), form.email(), form.contrasenia(), form.nombreReal(), form.pais(), form.fechaNacimiento(), fechaRegistro(), form.avatar().orElse(null), form.saldoCartera(), form.estado());
+        var usuario = new UsuarioEntidad(idCounter++, form.nombreUsuario(), form.email(), form.contrasenia(), form.nombreReal(),
+                form.pais(), form.fechaNacimiento(), fechaRegistro(), form.avatar().orElse(null), form.saldoCartera(), form.estado());
         usuarios.add(usuario);
 
         return Optional.of(usuario);

@@ -9,6 +9,7 @@ import org.adrian.modelo.form.ErrorType;
 import org.adrian.modelo.form.UsuarioForm;
 import org.adrian.repositorio.interfaces.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,11 +53,32 @@ public class UsuarioControlador {
 
         //Esto es para que el paquete deje de serlo, ya que no se puede pasar un Optional al mapper
 
-        UsuarioEntidad usuarioEntidad = nuevoUsuario.orElseThrow(() -> new RuntimeException("Fallo al desencapsular la Entidad Usuario"));
+        var usuarioEntidad = nuevoUsuario.orElseThrow(() -> new ValidationExcepcion(errores));
 
         return Mapper.mapFrom(usuarioEntidad);
 
     }
+
+    public UsuarioDto consultarPefilUsuarioPorId(Long id) throws ValidationExcepcion{
+
+        var errores = new ArrayList<ErrorDto>();
+
+        var usuarioABuscarOpt = usuarioRepo.obtenerPorId(id);
+
+        if(usuarioABuscarOpt.isEmpty()){
+            errores.add(new ErrorDto("idUsuario", ErrorType.NO_ENCONTRADO));
+        }
+
+        if(!errores.isEmpty()){
+            throw new ValidationExcepcion(errores);
+        }
+
+        var usuarioEncontrado = usuarioABuscarOpt.get();
+
+        return Mapper.mapFrom(usuarioEncontrado);
+
+    }
+
 
 }
 

@@ -10,7 +10,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.time.LocalDate;
 
-public record UsuarioForm(String nombreUsuario, String email, String contrasenia, String nombreReal, String pais, LocalDate fechaNacimiento, Optional<String> avatar, Double saldoCartera, EstadoCuentaEnum.ESTADOCUENTA estado) {
+public record UsuarioForm(String nombreUsuario, String email, String contrasenia, String nombreReal, String pais, LocalDate fechaNacimiento,
+                          Optional<String> avatar, Double saldoCartera, EstadoCuentaEnum.ESTADOCUENTA estado) {
 
     public List<ErrorDto> validar() {
 
@@ -104,7 +105,7 @@ public record UsuarioForm(String nombreUsuario, String email, String contrasenia
         if (pais == null) {
             errores.add(new ErrorDto("pais", ErrorType.REQUERIDO));
         }
-        if(pais == null || !(pais.matches(String.valueOf(paisesValidos)))){
+        if(pais == null || !paisesValidos.contains(pais)){
             errores.add(new ErrorDto("pais", ErrorType.NO_ENCONTRADO));
         }
 
