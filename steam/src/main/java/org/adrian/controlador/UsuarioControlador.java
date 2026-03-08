@@ -11,6 +11,7 @@ import org.adrian.repositorio.interfaces.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 
@@ -59,7 +60,7 @@ public class UsuarioControlador {
 
     }
 
-    public UsuarioDto consultarPefilUsuarioPorId(Long id) throws ValidationExcepcion{
+    public UsuarioDto consultarPerfilUsuarioPorId(Long id) throws ValidationExcepcion{
 
         var errores = new ArrayList<ErrorDto>();
 
@@ -77,6 +78,55 @@ public class UsuarioControlador {
 
         return Mapper.mapFrom(usuarioEncontrado);
 
+    }
+
+    public UsuarioDto consultarPerfilUsuarioPorNombre(String nombre) throws ValidationExcepcion{
+
+        var errores = new ArrayList<ErrorDto>();
+
+        var usuarioABuscarOpt = usuarioRepo.obtenerTodos().stream().filter(U -> Objects.equals(U.nombre(), nombre)).toList();
+
+
+        if(usuarioABuscarOpt.isEmpty()){
+            errores.add(new ErrorDto("nombreUsuario", ErrorType.NO_ENCONTRADO));
+        }
+
+        if(!errores.isEmpty()){
+            throw new ValidationExcepcion(errores);
+        }
+
+        var usuarioEncontrado = usuarioABuscarOpt.getFirst();
+
+        return Mapper.mapFrom(usuarioEncontrado);
+    }
+
+    public Double aniadirSaldoCarteraUsuario(Long id, Double cantidadAniadir) throws ValidationExcepcion{
+
+        var errores = new ArrayList<ErrorDto>();
+
+        var usuarioABuscarOpt = usuarioRepo.obtenerPorId(id);
+
+        if(usuarioABuscarOpt.isEmpty()){
+            errores.add(new ErrorDto("idUsuario", ErrorType.NO_ENCONTRADO));
+        }
+
+        var usuarioEncontrado = usuarioABuscarOpt.get();
+
+        if (cantidadAniadir < 0){
+            errores.add(new ErrorDto("cantidadAniadir", ErrorType.NO_ENCONTRADO));
+        }
+
+        if(!(cantidadAniadir < 5.00 || cantidadAniadir > 500.00)){
+            errores.add(new ErrorDto("cantidadAniadir", ErrorType.FORMATO_INVALIDO));
+        }
+
+        var nuevoSaldo = usuarioEncontrado.saldoCartera() + cantidadAniadir;
+
+        if(!errores.isEmpty()){
+            throw new ValidationExcepcion(errores);
+        }
+
+        return nuevoSaldo;
     }
 
 

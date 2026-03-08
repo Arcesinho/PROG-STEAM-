@@ -1,0 +1,3 @@
+package org.adrian.modelo.enums;
+
+public enum METODOPAGOCOMPRA{TARJETA_CREDITO, PAYPAL, CARTERA_STEAM, TRANSFERENCIA, OTROS}

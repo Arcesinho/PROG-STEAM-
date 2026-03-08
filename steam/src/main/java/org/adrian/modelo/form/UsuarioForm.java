@@ -1,7 +1,6 @@
 package org.adrian.modelo.form;
 
 import org.adrian.modelo.enums.*;
-import org.adrian.modelo.enums.EstadoCuentaEnum;
 import org.adrian.recursos.ComprobarDosDecimales;
 
 import java.time.Period;
@@ -11,7 +10,15 @@ import java.util.regex.Pattern;
 import java.time.LocalDate;
 
 public record UsuarioForm(String nombreUsuario, String email, String contrasenia, String nombreReal, String pais, LocalDate fechaNacimiento,
-                          Optional<String> avatar, Double saldoCartera, EstadoCuentaEnum.ESTADOCUENTA estado) {
+                          Optional<String> avatar, Double saldoCartera, ESTADOCUENTA estado) {
+
+    public static final int MIN_LENG_NOMBREUSUARIO = 3;
+    public static final int MAX_LENG_NOMBREUSUARIO = 20;
+    public static final int MIN_LENG_CONTRASENIA = 8;
+    public static final int MIN_LENG_NOMBREREAL = 2;
+    public static final int MAX_LENG_NOMBREREAL = 50;
+    public static final int MIN_EDADNACIMIENTO = 13;
+    public static final int MAX_LENG_AVATAR = 100;
 
     public List<ErrorDto> validar() {
 
@@ -60,10 +67,10 @@ public record UsuarioForm(String nombreUsuario, String email, String contrasenia
         if (nombreUsuario == null || !nombreUsuario.matches("[a-zA-Z]+-+_]")){
             errores.add(new ErrorDto("nombreUsuario", ErrorType.FORMATO_INVALIDO));
         }
-        if(nombreUsuario == null ||nombreUsuario.length()<3){
+        if(nombreUsuario == null ||nombreUsuario.length()< MIN_LENG_NOMBREUSUARIO){
             errores.add(new ErrorDto("nombreUsuario", ErrorType.VALOR_DEMASIADO_BAJO));
         }
-        if(nombreUsuario == null ||nombreUsuario.length()>20){
+        if(nombreUsuario == null ||nombreUsuario.length()> MAX_LENG_NOMBREUSUARIO){
             errores.add(new ErrorDto("nombreUsuario", ErrorType.VALOR_DEMASIADO_ALTO));
         }
 
@@ -81,7 +88,7 @@ public record UsuarioForm(String nombreUsuario, String email, String contrasenia
         if (contrasenia == null) {
             errores.add(new ErrorDto("contrasenia", ErrorType.REQUERIDO));
         }
-        if(contrasenia == null || contrasenia.length()<8){
+        if(contrasenia == null || contrasenia.length()< MIN_LENG_CONTRASENIA){
             errores.add(new ErrorDto("contrasenia", ErrorType.VALOR_DEMASIADO_BAJO));
         }
         if (!(mayusculas >= 1 && minusculas >= 1 && digitos >= 1)) {
@@ -93,10 +100,10 @@ public record UsuarioForm(String nombreUsuario, String email, String contrasenia
         if(nombreReal==null){
             errores.add(new ErrorDto("nombreReal", ErrorType.REQUERIDO));
         }
-        if(nombreReal == null|| nombreReal.length()<2){
+        if(nombreReal == null|| nombreReal.length()< MIN_LENG_NOMBREREAL){
             errores.add(new ErrorDto("nombreReal", ErrorType.VALOR_DEMASIADO_BAJO));
         }
-        if(nombreReal == null|| nombreReal.length()>50){
+        if(nombreReal == null|| nombreReal.length()> MAX_LENG_NOMBREREAL){
             errores.add(new ErrorDto("nombreReal", ErrorType.VALOR_DEMASIADO_ALTO));
         }
 
@@ -114,7 +121,7 @@ public record UsuarioForm(String nombreUsuario, String email, String contrasenia
         if (fechaNacimiento == null) {
             errores.add(new ErrorDto("fechaNacimiento", ErrorType.REQUERIDO));
         }
-        if(fechaNacimiento == null || edadEnAnios.getYears() < 13){
+        if(fechaNacimiento == null || edadEnAnios.getYears() < MIN_EDADNACIMIENTO){
             errores.add(new ErrorDto("fechaNacimiento", ErrorType.FECHA_NO_VALIDA));
         }
         if(fechaNacimiento == null || fechaNacimiento.isAfter(LocalDate.now())){
@@ -124,7 +131,7 @@ public record UsuarioForm(String nombreUsuario, String email, String contrasenia
         //Validaciones del avatar
 
         var av = avatar.orElse(null);
-        if(av == null || av.length() >100){
+        if(av == null || av.length() > MAX_LENG_AVATAR){
             errores.add(new ErrorDto("avatar", ErrorType.VALOR_DEMASIADO_ALTO));
         }
 

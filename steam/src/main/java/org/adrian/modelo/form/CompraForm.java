@@ -1,14 +1,17 @@
 package org.adrian.modelo.form;
 
-import org.adrian.modelo.enums.EstadoCompraEnum;
-import org.adrian.modelo.enums.MetodoPagoCompraEnum;
+import org.adrian.modelo.enums.ESTADOCOMPRA;
+import org.adrian.modelo.enums.METODOPAGOCOMPRA;
 import org.adrian.recursos.ComprobarDosDecimales;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public record CompraForm (Long id, Long idUsuario, Long idJuego, Double precioSinDescuento, Optional<Integer> descuento, MetodoPagoCompraEnum.METODOPAGO metodopago, EstadoCompraEnum.ESTADO estado){
+public record CompraForm (Long id, Long idUsuario, Long idJuego, Double precioSinDescuento, Optional<Integer> descuento, METODOPAGOCOMPRA metodopago, ESTADOCOMPRA estado){
+
+    public static final int MIN_DESCUENTO = 0;
+    public static final int MAX_DESCUENTO = 100;
 
     public List<ErrorDto> validar() {
 
@@ -48,7 +51,7 @@ public record CompraForm (Long id, Long idUsuario, Long idJuego, Double precioSi
         //Validaciones de descuento
 
         var d = descuento.orElse(null);
-        if(d == null || d < 0 || d > 100){
+        if(d == null || d < MIN_DESCUENTO || d > MAX_DESCUENTO){
             errores.add(new ErrorDto("descuento", ErrorType.FORMATO_INVALIDO));
         }
         if (d == null || d < 0){

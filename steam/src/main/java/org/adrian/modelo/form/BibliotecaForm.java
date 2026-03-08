@@ -1,6 +1,6 @@
 package org.adrian.modelo.form;
 
-import org.adrian.modelo.enums.EstadoInstalacionBiblioteca;
+import org.adrian.modelo.enums.ESTADOINSTALACIONBIBLIOTECA;
 import org.adrian.recursos.ComprobarDosDecimales;
 
 import java.time.LocalDateTime;
@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public record BibliotecaForm(Long id, Long idUsuario, Long idJuego, LocalDateTime fechaAdquisicion, Double horasJuego,
                              Optional<LocalDateTime> ultimaFechaJuego,
-                             EstadoInstalacionBiblioteca.ESTADO_INSTALACION estadoInstalacion) {
+                             ESTADOINSTALACIONBIBLIOTECA estadoInstalacion) {
 
     public List<ErrorDto> validar() {
 

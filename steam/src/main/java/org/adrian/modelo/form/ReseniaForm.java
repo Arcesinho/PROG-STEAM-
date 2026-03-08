@@ -1,11 +1,14 @@
 package org.adrian.modelo.form;
 
-import org.adrian.modelo.enums.EstadoReseniaEnum;
+import org.adrian.modelo.enums.ESTADORESENIA;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public record ReseniaForm (Long id, Long idUsuario, Long idJuego, boolean recomendado, String textoResenia,  EstadoReseniaEnum.ESTADO estado){
+public record ReseniaForm (Long id, Long idUsuario, Long idJuego, boolean recomendado, String textoResenia,  ESTADORESENIA estado){
+
+    public static final int MIN_LENG_TEXTORESENIA = 50;
+    public static final int MAX_LENG_TEXTORESENIA = 8000;
 
     public List<ErrorDto> validar() {
 
@@ -34,10 +37,10 @@ public record ReseniaForm (Long id, Long idUsuario, Long idJuego, boolean recome
         if (textoResenia == null){
             errores.add(new ErrorDto("textoResenia", ErrorType.REQUERIDO));
         }
-        if(textoResenia == null || textoResenia.length() < 50){
+        if(textoResenia == null || textoResenia.length() < MIN_LENG_TEXTORESENIA){
             errores.add(new ErrorDto("textoResenia", ErrorType.VALOR_DEMASIADO_BAJO));
         }
-        if(textoResenia == null || textoResenia.length() > 8000){
+        if(textoResenia == null || textoResenia.length() > MAX_LENG_TEXTORESENIA){
             errores.add(new ErrorDto("textoResenia", ErrorType.VALOR_DEMASIADO_ALTO));
         }
 
