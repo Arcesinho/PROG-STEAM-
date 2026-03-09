@@ -4,7 +4,7 @@ import org.adrian.controlador.UsuarioControlador;
 import org.adrian.excepcion.ValidationExcepcion;
 import org.adrian.modelo.dto.UsuarioDto;
 import org.adrian.modelo.entidad.UsuarioEntidad;
-import org.adrian.modelo.enums.EstadoCuentaEnum;
+import org.adrian.modelo.enums.ESTADOCUENTA;
 import org.adrian.modelo.form.UsuarioForm;
 import org.adrian.repositorio.interfaces.IUsuarioRepo;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,7 +49,7 @@ class UsuarioControladorTest {
             UsuarioEntidad user = new UsuarioEntidad(
                     1L, form.nombreUsuario(), form.email(), form.contrasenia(),
                     form.nombreReal(), form.pais(), form.fechaNacimiento(),
-                    null, null, null , EstadoCuentaEnum.ESTADOCUENTA.ACTIVA
+                    null, null, null , ESTADOCUENTA.ACTIVA
             );
             usuarios.add(user);
             return Optional.of(user);
@@ -65,14 +65,15 @@ class UsuarioControladorTest {
     public void testRegistroExitoso() throws ValidationExcepcion {
 
         UsuarioForm form = new UsuarioForm(
-                "Test","adrian@gmail.com",
+                "Test1-",
+                "adrian@gmail.com",
                 "Password123",
                 "Adrian",
                 "Spain",
                 LocalDate.of(2000, 1, 1),
                 Optional.of("Adrian"),
                 100.0,
-                EstadoCuentaEnum.ESTADOCUENTA.ACTIVA);
+                ESTADOCUENTA.ACTIVA);
 
         UsuarioDto resultado = controlador.registrarNuevoUsuario(form);
 
@@ -84,16 +85,15 @@ class UsuarioControladorTest {
     void testErrorPorEmailDuplicado() {
         UsuarioForm primerForm = new UsuarioForm(
                 "UserUno", "duplicado@gmail.com", "Pass1", "Real", "Spain",
-                LocalDate.of(1990, 1, 1), Optional.empty(), 0.0, EstadoCuentaEnum.ESTADOCUENTA.ACTIVA
+                LocalDate.of(1990, 1, 1), Optional.empty(), 0.0, ESTADOCUENTA.ACTIVA
         );
         try { controlador.registrarNuevoUsuario(primerForm); } catch (Exception ignored) {}
 
         UsuarioForm segundoForm = new UsuarioForm(
                 "UserDos", "duplicado@gmail.com", "Pass2", "Real2", "Spain",
-                LocalDate.of(1995, 5, 5), Optional.empty(), 0.0, EstadoCuentaEnum.ESTADOCUENTA.ACTIVA
+                LocalDate.of(1995, 5, 5), Optional.empty(), 0.0, ESTADOCUENTA.ACTIVA
         );
 
-        // Verificamos que lance la excepción por el anyMatch del controlador
         assertThrows(ValidationExcepcion.class, () -> {
             controlador.registrarNuevoUsuario(segundoForm);
         }, "Debería lanzar ValidationExcepcion por email duplicado");

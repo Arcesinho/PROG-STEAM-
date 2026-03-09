@@ -64,7 +64,7 @@ public record UsuarioForm(String nombreUsuario, String email, String contrasenia
         if (nombreUsuario == null || Character.isDigit(nombreUsuario.charAt(0))) {
             errores.add(new ErrorDto("nombreUsuario", ErrorType.NO_EMPEZAR_POR_NUMERO));
         }
-        if (nombreUsuario == null || !nombreUsuario.matches("[a-zA-Z]+-+_]")){
+        if (nombreUsuario == null || !nombreUsuario.matches("[A-Za-z0-9_-]+")){
             errores.add(new ErrorDto("nombreUsuario", ErrorType.FORMATO_INVALIDO));
         }
         if(nombreUsuario == null ||nombreUsuario.length()< MIN_LENG_NOMBREUSUARIO){
