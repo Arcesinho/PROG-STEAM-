@@ -120,13 +120,17 @@ public class UsuarioControlador {
             errores.add(new ErrorDto("cantidadAniadir", ErrorType.FORMATO_INVALIDO));
         }
 
-        var nuevoSaldo = usuarioEncontrado.saldoCartera() + cantidadAniadir;
-
         if(!errores.isEmpty()){
             throw new ValidationExcepcion(errores);
         }
 
-        return nuevoSaldo;
+        var nuevoSaldo = usuarioEncontrado.saldoCartera() + cantidadAniadir;
+
+        usuarioRepo.actualizar(id,new UsuarioForm(usuarioEncontrado.nombre(),usuarioEncontrado.email(),
+                usuarioEncontrado.contrasenia(),usuarioEncontrado.nombreReal(),usuarioEncontrado.pais(),
+                usuarioEncontrado.fechaNacimiento(), Optional.ofNullable(usuarioEncontrado.avatar()), nuevoSaldo, usuarioEncontrado.estado()));
+
+        return nuevoSaldo; //Cambiar a dto
     }
 
 
