@@ -4,6 +4,7 @@ import org.adrian.excepcion.ValidationExcepcion;
 import org.adrian.mapper.Mapper;
 import org.adrian.modelo.dto.UsuarioDto;
 import org.adrian.modelo.entidad.UsuarioEntidad;
+import org.adrian.modelo.enums.ESTADOCUENTA;
 import org.adrian.modelo.form.ErrorDto;
 import org.adrian.modelo.form.ErrorType;
 import org.adrian.modelo.form.UsuarioForm;
@@ -62,7 +63,7 @@ public class UsuarioControlador {
 
     public UsuarioDto consultarPerfilUsuarioPorId(Long id) throws ValidationExcepcion{
 
-        var errores = new ArrayList<ErrorDto>();
+        List<ErrorDto> errores = new ArrayList<ErrorDto>();
 
         var usuarioABuscarOpt = usuarioRepo.obtenerPorId(id);
 
@@ -100,7 +101,7 @@ public class UsuarioControlador {
         return Mapper.mapFrom(usuarioEncontrado);
     }
 
-    public Double aniadirSaldoCarteraUsuario(Long id, Double cantidadAniadir) throws ValidationExcepcion{
+    public UsuarioDto aniadirSaldoCarteraUsuario(Long id, Double cantidadAniadir) throws ValidationExcepcion{
 
         var errores = new ArrayList<ErrorDto>();
 
@@ -111,6 +112,10 @@ public class UsuarioControlador {
         }
 
         var usuarioEncontrado = usuarioABuscarOpt.get();
+
+        if(usuarioEncontrado.estado() != ESTADOCUENTA.ACTIVA){
+            errores.add(new ErrorDto("estado", ErrorType.FORMATO_INVALIDO));
+        }
 
         if (cantidadAniadir < 0){
             errores.add(new ErrorDto("cantidadAniadir", ErrorType.NO_ENCONTRADO));
@@ -126,14 +131,34 @@ public class UsuarioControlador {
 
         var nuevoSaldo = usuarioEncontrado.saldoCartera() + cantidadAniadir;
 
-        usuarioRepo.actualizar(id,new UsuarioForm(usuarioEncontrado.nombre(),usuarioEncontrado.email(),
+        var usuarioActualizado = usuarioRepo.actualizar(id,new UsuarioForm(usuarioEncontrado.nombre(),usuarioEncontrado.email(),
                 usuarioEncontrado.contrasenia(),usuarioEncontrado.nombreReal(),usuarioEncontrado.pais(),
                 usuarioEncontrado.fechaNacimiento(), Optional.ofNullable(usuarioEncontrado.avatar()), nuevoSaldo, usuarioEncontrado.estado()));
 
-        return nuevoSaldo; //Cambiar a dto
+        var usuarioADevolver = usuarioActualizado.get();
+
+        return Mapper.mapFrom(usuarioADevolver);
     }
 
+    public Double consultarSaldoCarteraUsuario(Long id) throws ValidationExcepcion{
 
+        var errores = new ArrayList<ErrorDto>();
+
+        var usuarioABuscarOpt = usuarioRepo.obtenerPorId(id);
+
+        if(usuarioABuscarOpt.isEmpty()){
+            errores.add(new ErrorDto("idUsuario", ErrorType.NO_ENCONTRADO));
+        }
+
+        if(!errores.isEmpty()){
+            throw new ValidationExcepcion(errores);
+        }
+
+        var usuarioEncontrado = usuarioABuscarOpt.get();
+
+        return usuarioEncontrado.saldoCartera();
+
+    }
 }
 
 
