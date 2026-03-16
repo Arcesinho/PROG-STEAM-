@@ -10,7 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public record JuegoForm(String tituloJuego, Optional<String> descripcion, String desarrollador, LocalDateTime fechaLanzamiento, Double precioBase, Optional<Integer> descuentoActual, PEGIJUEGO pegi, Optional<String[]> idiomas ,
+public record JuegoForm(String tituloJuego, Optional<String> descripcion, String desarrollador, LocalDateTime fechaLanzamiento,
+                        Double precioBase, Optional<Integer> descuentoActual, PEGIJUEGO pegi, Optional<String[]> idiomas ,
                         ESTADOJUEGO estado, CATEGORIAJUEGO categoria) {
 
     public static final int MIN_LENG_TITULO = 1;
