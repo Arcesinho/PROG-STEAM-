@@ -42,6 +42,27 @@ public class JuegoControlador {
 
     }
 
+    public boolean consultarCatalogoCompleto() throws ValidationExcepcion{
+
+        List<ErrorDto> errores = new ArrayList<ErrorDto>();
+
+        var listadeJuegos = juegoRepo.obtenerTodos();
+
+        if(listadeJuegos.isEmpty()){
+            errores.add(new ErrorDto("listaJuegos", ErrorType.NO_ENCONTRADO));
+        }
+
+        if(!errores.isEmpty()){
+            throw new ValidationExcepcion(errores);
+        }
+
+        var listaDeJuegosDTO = listadeJuegos.stream().toList();
+
+        return false;
+        //Falta acabar la devolucioón de una lista en este caso
+
+    }
+
     public JuegoDto consultarDetalleJuegoPorId(Long id) throws ValidationExcepcion{
 
         List<ErrorDto> errores = new ArrayList<ErrorDto>();
