@@ -66,7 +66,7 @@ public class BibliotecaControlador {
 
         var biblioteca = nuevaBiblioteca.get();
 
-        return Mapper.mapFrom(biblioteca);
+        return Mapper.mapFrom(biblioteca);//Meter en el map from Dto y añadir el usuario y el juego directamente en el dto de biblioteca
 
     }
 
