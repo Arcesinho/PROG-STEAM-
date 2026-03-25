@@ -34,13 +34,13 @@ public class BibliotecaControlador {
         var idUsuairo = form.idUsuario();
 
         var usuario = usuarioRepo.obtenerPorId(idUsuairo);
-        var Juego = juegoRepo.obtenerPorId(idJuego);
+        var juego = juegoRepo.obtenerPorId(idJuego);
 
         if(usuario.isEmpty()){
             errores.add(new ErrorDto("Usuario", ErrorType.NO_ENCONTRADO));
         }
 
-        if(Juego.isEmpty()){
+        if(juego.isEmpty()){
             errores.add(new ErrorDto("Juego", ErrorType.NO_ENCONTRADO));
         }
 
@@ -62,11 +62,17 @@ public class BibliotecaControlador {
             throw new ValidationExcepcion(errores);
         }
 
+        var usuarioEntidad = usuario.get();
+        var juegoEntidad = juego.get();
+
         Optional<BibliotecaEntidad> nuevaBiblioteca = bibliotecaRepo.crear(form);
+
+        var usuarioDto = Mapper.mapFrom(usuarioEntidad);
+        var juegoDto = Mapper.mapFrom(juegoEntidad);
 
         var biblioteca = nuevaBiblioteca.get();
 
-        return Mapper.mapFrom(biblioteca);//Meter en el map from Dto y añadir el usuario y el juego directamente en el dto de biblioteca
+        return Mapper.mapFrom(biblioteca, usuarioDto, juegoDto);
 
     }
 

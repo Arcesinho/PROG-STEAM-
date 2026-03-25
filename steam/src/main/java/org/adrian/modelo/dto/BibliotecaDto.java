@@ -5,7 +5,7 @@ import org.adrian.modelo.enums.ESTADOINSTALACIONBIBLIOTECA;
 
 import java.time.LocalDateTime;
 
-public record BibliotecaDto (Long id, Long idUsuario, Long idJuego,
+public record BibliotecaDto (Long id, Long idUsuario, Long idJuego, UsuarioDto usuarioDto, JuegoDto JuegoDto,
                              LocalDateTime fechaAdquisicion,
                              Double horasJuego, LocalDateTime ultimaFechaJuego,
                              ESTADOINSTALACIONBIBLIOTECA estadoInstalacion)  {}

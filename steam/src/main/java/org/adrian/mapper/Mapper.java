@@ -44,7 +44,7 @@ public class Mapper {
                 entidad.getCategoria());
     }
 
-    public static BibliotecaDto mapFrom(BibliotecaEntidad entidad){
+    public static BibliotecaDto mapFrom(BibliotecaEntidad entidad, UsuarioDto usuario, JuegoDto juego){
 
         if(entidad == null)
             return null;
@@ -53,6 +53,8 @@ public class Mapper {
                 entidad.getId(),
                 entidad.getIdUsuario(),
                 entidad.getIdJuego(),
+                usuario,
+                juego,
                 entidad.getFechaAdquisicion(),
                 entidad.getHorasJuego(),
                 entidad.getUltimaFechaJuego(),
