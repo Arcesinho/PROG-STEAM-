@@ -45,14 +45,14 @@ public class BibliotecaControlador {
         }
 
         boolean usuarioExiste = bibliotecaRepo.obtenerTodos().stream()
-                .anyMatch(b -> b.idUsuario().equals(form.idUsuario()));
+                .anyMatch(b -> b.getIdUsuario().equals(form.idUsuario()));
 
         if(usuarioExiste){
             errores.add(new ErrorDto("usuario", ErrorType.DUPLICADO));
         }
 
         boolean juegoExiste = bibliotecaRepo.obtenerTodos().stream()
-                .anyMatch(b -> b.idJuego().equals(form.idJuego()));
+                .anyMatch(b -> b.getIdJuego().equals(form.idJuego()));
 
         if(juegoExiste){
             errores.add(new ErrorDto("juego", ErrorType.DUPLICADO));
@@ -70,19 +70,19 @@ public class BibliotecaControlador {
 
     }
 
-    public BibliotecaDto eliminarJuegoBiblioteca(Long idJuego, Long idUsuario) throws ValidationExcepcion{
+    public int eliminarJuegoBiblioteca(Long idJuego, Long idUsuario) throws ValidationExcepcion{
 
         List<ErrorDto> errores = new ArrayList<ErrorDto>();
 
         boolean usuarioExiste = bibliotecaRepo.obtenerTodos().stream()
-                .anyMatch(b -> b.idUsuario().equals(idUsuario));
+                .anyMatch(b -> b.getIdUsuario().equals(idUsuario));
 
         if(usuarioExiste){
             errores.add(new ErrorDto("usuario", ErrorType.DUPLICADO));
         }
 
         boolean juegoExiste = bibliotecaRepo.obtenerTodos().stream()
-                .anyMatch(b -> b.idJuego().equals(idJuego));
+                .anyMatch(b -> b.getIdJuego().equals(idJuego));
 
         if(juegoExiste){
             errores.add(new ErrorDto("juego", ErrorType.DUPLICADO));
@@ -93,6 +93,8 @@ public class BibliotecaControlador {
         }
 
         //Falta acabar
+
+        return 1;
 
     }
 

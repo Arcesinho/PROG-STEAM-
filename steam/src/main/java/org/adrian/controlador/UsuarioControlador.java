@@ -32,7 +32,7 @@ public class UsuarioControlador {
         //Validaciones si el email ya existe
 
         boolean emailExiste = usuarioRepo.obtenerTodos().stream()
-                .anyMatch(u -> u.email().equalsIgnoreCase(form.email()));
+                .anyMatch(u -> u.getEmail().equalsIgnoreCase(form.email()));
         if (emailExiste) {
             errores.add(new ErrorDto("email", ErrorType.DUPLICADO));
         }
@@ -40,7 +40,7 @@ public class UsuarioControlador {
         //Validaciones si el nombreUsuario ya existe
 
         boolean nombreExiste = usuarioRepo.obtenerTodos().stream()
-                .anyMatch(u -> u.nombre().equalsIgnoreCase(form.nombreUsuario()));
+                .anyMatch(u -> u.getNombre().equalsIgnoreCase(form.nombreUsuario()));
         if (nombreExiste) {
             errores.add(new ErrorDto("nombreUsuario", ErrorType.DUPLICADO));
         }
@@ -85,7 +85,7 @@ public class UsuarioControlador {
 
         var errores = new ArrayList<ErrorDto>();
 
-        var usuarioABuscarOpt = usuarioRepo.obtenerTodos().stream().filter(U -> Objects.equals(U.nombre(), nombre)).toList();
+        var usuarioABuscarOpt = usuarioRepo.obtenerTodos().stream().filter(U -> Objects.equals(U.getNombre(), nombre)).toList();
 
 
         if(usuarioABuscarOpt.isEmpty()){
@@ -113,7 +113,7 @@ public class UsuarioControlador {
 
         var usuarioEncontrado = usuarioABuscarOpt.get();
 
-        if(usuarioEncontrado.estado() != ESTADOCUENTA.ACTIVA){
+        if(usuarioEncontrado.getEstado() != ESTADOCUENTA.ACTIVA){
             errores.add(new ErrorDto("estado", ErrorType.FORMATO_INVALIDO));
         }
 
@@ -129,11 +129,11 @@ public class UsuarioControlador {
             throw new ValidationExcepcion(errores);
         }
 
-        var nuevoSaldo = usuarioEncontrado.saldoCartera() + cantidadAniadir;
+        var nuevoSaldo = usuarioEncontrado.getSaldoCartera() + cantidadAniadir;
 
-        var usuarioActualizado = usuarioRepo.actualizar(id,new UsuarioForm(usuarioEncontrado.nombre(),usuarioEncontrado.email(),
-                usuarioEncontrado.contrasenia(),usuarioEncontrado.nombreReal(),usuarioEncontrado.pais(),
-                usuarioEncontrado.fechaNacimiento(), Optional.ofNullable(usuarioEncontrado.avatar()), nuevoSaldo, usuarioEncontrado.estado()));
+        var usuarioActualizado = usuarioRepo.actualizar(id,new UsuarioForm(usuarioEncontrado.getNombre(),usuarioEncontrado.getEmail(),
+                usuarioEncontrado.getContrasenia(),usuarioEncontrado.getNombreReal(),usuarioEncontrado.getPais(),
+                usuarioEncontrado.getFechaNacimiento(), Optional.ofNullable(usuarioEncontrado.getAvatar()), nuevoSaldo, usuarioEncontrado.getEstado()));
 
         var usuarioADevolver = usuarioActualizado.get();
 
@@ -156,7 +156,7 @@ public class UsuarioControlador {
 
         var usuarioEncontrado = usuarioABuscarOpt.get();
 
-        return usuarioEncontrado.saldoCartera();
+        return usuarioEncontrado.getSaldoCartera();
 
     }
 }

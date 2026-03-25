@@ -32,7 +32,7 @@ public class ReseniaRepoImplementacionMemoria implements IReseniaRepo {
     public Optional<ReseniaEntidad> crear(ReseniaForm form) {
 
         Double horasEnEsteMomento = bibliotecaRepo.obtenerHoras(form.idUsuario(), form.idJuego())
-                .map(BibliotecaEntidad::horasJuego)
+                .map(BibliotecaEntidad::getHorasJuego)
                 .orElse(0.0);
 
         var resenia = new ReseniaEntidad(idCounter++, form.idUsuario(), form.idJuego(), form.recomendado(), form.textoResenia(),  horasEnEsteMomento, fechaPublicacion(), fechaUltimaEdicion(), form.estado());
@@ -44,7 +44,7 @@ public class ReseniaRepoImplementacionMemoria implements IReseniaRepo {
     @Override
     public Optional<ReseniaEntidad> obtenerPorId(Long id) {
         return resenias.stream()
-                .filter(u -> u.id().equals(id))
+                .filter(u -> u.getId().equals(id))
                 .findFirst();
     }
 
@@ -60,11 +60,11 @@ public class ReseniaRepoImplementacionMemoria implements IReseniaRepo {
             throw new IllegalArgumentException("Reseña no encontrado");
         }
         Double horasActualizadas = bibliotecaRepo.obtenerHoras(form.idUsuario(), form.idJuego())
-                .map(BibliotecaEntidad::horasJuego)
-                .orElse(reseniaOpt.get().horasHastaResenia());
+                .map(BibliotecaEntidad::getHorasJuego)
+                .orElse(reseniaOpt.get().getHorasHastaResenia());
 
         var reseniaActualizada = new ReseniaEntidad(id,  form.idUsuario(), form.idJuego(), form.recomendado(), form.textoResenia(),  horasActualizadas, fechaPublicacion(), fechaUltimaEdicion(), form.estado());
-        resenias.removeIf(u -> u.id().equals(id));
+        resenias.removeIf(u -> u.getId().equals(id));
         resenias.add(reseniaActualizada);
 
         return Optional.of(reseniaActualizada);
@@ -72,6 +72,6 @@ public class ReseniaRepoImplementacionMemoria implements IReseniaRepo {
 
     @Override
     public boolean eliminar(Long id) {
-        return resenias.removeIf(u -> u.id().equals(id));
+        return resenias.removeIf(u -> u.getId().equals(id));
     }
 }

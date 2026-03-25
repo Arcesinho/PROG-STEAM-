@@ -28,7 +28,7 @@ public class JuegoRepoImplementacionMemoria implements IJuegoRepo {
     @Override
     public Optional<JuegoEntidad> obtenerPorId(Long id) {
         return juegos.stream()
-                .filter(u -> u.id().equals(id))
+                .filter(u -> u.getId().equals(id))
                 .findFirst();
     }
 
@@ -45,7 +45,7 @@ public class JuegoRepoImplementacionMemoria implements IJuegoRepo {
         }
 
         var juegoActualizado = new JuegoEntidad(id, form.tituloJuego(), form.descripcion().orElse(null), form.desarrollador(), form.fechaLanzamiento(), form.precioBase(), form.descuentoActual().orElse(null), form.idiomas().orElse(null), form.estado(), form.pegi(), form.categoria());
-        juegos.removeIf(u -> u.id().equals(id));
+        juegos.removeIf(u -> u.getId().equals(id));
         juegos.add(juegoActualizado);
 
         return Optional.of(juegoActualizado);
@@ -53,6 +53,6 @@ public class JuegoRepoImplementacionMemoria implements IJuegoRepo {
 
     @Override
     public boolean eliminar(Long id) {
-        return juegos.removeIf(u -> u.id().equals(id));
+        return juegos.removeIf(u -> u.getId().equals(id));
     }
 }

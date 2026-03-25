@@ -25,7 +25,7 @@ public class JuegoControlador {
         List<ErrorDto> errores = form.validar();
 
         boolean tituloExiste = juegoRepo.obtenerTodos().stream()
-                .anyMatch(u -> u.tituloJuego().equalsIgnoreCase(form.tituloJuego()));
+                .anyMatch(u -> u.getTituloJuego().equalsIgnoreCase(form.tituloJuego()));
         if (tituloExiste) {
             errores.add(new ErrorDto("tituloJuego", ErrorType.DUPLICADO));
         }
@@ -101,10 +101,10 @@ public class JuegoControlador {
             throw new ValidationExcepcion(errores);
         }
 
-        Double nuevoPrecio = JuegoEncontrado.precioBase() - (JuegoEncontrado.precioBase()*0.01*descuento);
+        Double nuevoPrecio = JuegoEncontrado.getPrecioBase() - (JuegoEncontrado.getPrecioBase()*0.01*descuento);
 
-        var JuegoActualizado = juegoRepo.actualizar(id, new JuegoForm(JuegoEncontrado.tituloJuego(), Optional.ofNullable(JuegoEncontrado.descripcion()), JuegoEncontrado.desarrollador(), JuegoEncontrado.fechaLanzamiento(),
-                nuevoPrecio, Optional.of(descuento), JuegoEncontrado.pegi(), Optional.ofNullable(JuegoEncontrado.idiomas()), JuegoEncontrado.estado(), JuegoEncontrado.categoria()));
+        var JuegoActualizado = juegoRepo.actualizar(id, new JuegoForm(JuegoEncontrado.getTituloJuego(), Optional.ofNullable(JuegoEncontrado.getDescripcion()), JuegoEncontrado.getDesarrollador(), JuegoEncontrado.getFechaLanzamiento(),
+                nuevoPrecio, Optional.of(descuento), JuegoEncontrado.getPegi(), Optional.ofNullable(JuegoEncontrado.getIdiomas()), JuegoEncontrado.getEstado(), JuegoEncontrado.getCategoria()));
 
         var JuegoADevolver = JuegoActualizado.get();
 
@@ -130,8 +130,8 @@ public class JuegoControlador {
             throw new ValidationExcepcion(errores);
         }
 
-        var JuegoActualizado = juegoRepo.actualizar(id, new JuegoForm(JuegoEncontrado.tituloJuego(), Optional.ofNullable(JuegoEncontrado.descripcion()), JuegoEncontrado.desarrollador(), JuegoEncontrado.fechaLanzamiento(),
-                JuegoEncontrado.precioBase(), Optional.of(JuegoEncontrado.descuentoActual()), JuegoEncontrado.pegi(), Optional.ofNullable(JuegoEncontrado.idiomas()), estadojuego, JuegoEncontrado.categoria()));
+        var JuegoActualizado = juegoRepo.actualizar(id, new JuegoForm(JuegoEncontrado.getTituloJuego(), Optional.ofNullable(JuegoEncontrado.getDescripcion()), JuegoEncontrado.getDesarrollador(), JuegoEncontrado.getFechaLanzamiento(),
+                JuegoEncontrado.getPrecioBase(), Optional.of(JuegoEncontrado.getDescuentoActual()), JuegoEncontrado.getPegi(), Optional.ofNullable(JuegoEncontrado.getIdiomas()), estadojuego, JuegoEncontrado.getCategoria()));
 
         var JuegoADevolver = JuegoActualizado.get();
 

@@ -26,7 +26,7 @@ public class BibliotecaRepoImplementacionMemoria implements IBibliotecaRepo {
     @Override
     public Optional<BibliotecaEntidad> obtenerPorId(Long id) {
         return bibliotecas.stream()
-                .filter(u -> u.id().equals(id))
+                .filter(u -> u.getId().equals(id))
                 .findFirst();
     }
 
@@ -43,7 +43,7 @@ public class BibliotecaRepoImplementacionMemoria implements IBibliotecaRepo {
         }
 
         var bibliotecaActualizada = new BibliotecaEntidad(id, form.idUsuario(), form.idJuego(), form.fechaAdquisicion(), form.horasJuego(), form.ultimaFechaJuego().orElse(null), form.estadoInstalacion());
-        bibliotecas.removeIf(u -> u.id().equals(id));
+        bibliotecas.removeIf(u -> u.getId().equals(id));
         bibliotecas.add(bibliotecaActualizada);
 
         return Optional.of(bibliotecaActualizada);
@@ -52,12 +52,12 @@ public class BibliotecaRepoImplementacionMemoria implements IBibliotecaRepo {
     @Override
     public Optional<BibliotecaEntidad> obtenerHoras(Long idUsuario, Long idJuego) {
         return bibliotecas.stream()
-                .filter(b -> b.idUsuario().equals(idUsuario) && b.idJuego().equals(idJuego))
+                .filter(b -> b.getIdUsuario().equals(idUsuario) && b.getIdJuego().equals(idJuego))
                 .findFirst();
     }
 
     @Override
     public boolean eliminar(Long id) {
-        return bibliotecas.removeIf(u -> u.id().equals(id));
+        return bibliotecas.removeIf(u -> u.getId().equals(id));
     }
 }

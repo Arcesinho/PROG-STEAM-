@@ -34,7 +34,7 @@ public class UsuarioRepoImplementacionMemoria implements IUsuarioRepo {
     @Override
     public Optional<UsuarioEntidad> obtenerPorId(Long id) {
         return usuarios.stream()
-                .filter(u -> u.id().equals(id))
+                .filter(u -> u.getId().equals(id))
                 .findFirst();
     }
 
@@ -50,8 +50,8 @@ public class UsuarioRepoImplementacionMemoria implements IUsuarioRepo {
             throw new IllegalArgumentException("Usuario no encontrado");
         }
         UsuarioEntidad usuarioExistente = usuarioOpt.get();
-        var usuarioActualizado = new UsuarioEntidad(id, form.nombreUsuario(), form.email(), form.contrasenia(), form.nombreReal(), form.pais(), form.fechaNacimiento(), usuarioExistente.fechaRegistro(), form.avatar().orElse(null), form.saldoCartera(), form.estado());
-        usuarios.removeIf(u -> u.id().equals(id));
+        var usuarioActualizado = new UsuarioEntidad(id, form.nombreUsuario(), form.email(), form.contrasenia(), form.nombreReal(), form.pais(), form.fechaNacimiento(), usuarioExistente.getFechaRegistro(), form.avatar().orElse(null), form.saldoCartera(), form.estado());
+        usuarios.removeIf(u -> u.getId().equals(id));
         usuarios.add(usuarioActualizado);
 
         return Optional.of(usuarioActualizado);
@@ -59,6 +59,6 @@ public class UsuarioRepoImplementacionMemoria implements IUsuarioRepo {
 
     @Override
     public boolean eliminar(Long id) {
-        return usuarios.removeIf(u -> u.id().equals(id));
+        return usuarios.removeIf(u -> u.getId().equals(id));
     }
 }

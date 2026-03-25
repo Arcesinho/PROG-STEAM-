@@ -13,16 +13,16 @@ public class Mapper {
             return null;
 
         return new UsuarioDto(
-                entidad.id(),
-                entidad.nombre(),
-                entidad.email(),
-                entidad.nombreReal(),
-                entidad.pais(),
-                entidad.fechaNacimiento(),
-                entidad.fechaRegistro(),
-                entidad.avatar(),
-                entidad.saldoCartera(),
-                entidad.estado());
+                entidad.getId(),
+                entidad.getNombre(),
+                entidad.getEmail(),
+                entidad.getNombreReal(),
+                entidad.getPais(),
+                entidad.getFechaNacimiento(),
+                entidad.getFechaRegistro(),
+                entidad.getAvatar(),
+                entidad.getSaldoCartera(),
+                entidad.getEstado());
     }
 
     public static JuegoDto mapFrom(JuegoEntidad entidad){
@@ -31,17 +31,17 @@ public class Mapper {
             return null;
 
         return new JuegoDto(
-                entidad.id(),
-                entidad.tituloJuego(),
-                entidad.descripcion(),
-                entidad.desarrollador(),
-                entidad.fechaLanzamiento(),
-                entidad.precioBase(),
-                entidad.descuentoActual(),
-                entidad.idiomas(),
-                entidad.estado(),
-                entidad.pegi(),
-                entidad.categoria());
+                entidad.getId(),
+                entidad.getTituloJuego(),
+                entidad.getDescripcion(),
+                entidad.getDesarrollador(),
+                entidad.getFechaLanzamiento(),
+                entidad.getPrecioBase(),
+                entidad.getDescuentoActual(),
+                entidad.getIdiomas(),
+                entidad.getEstado(),
+                entidad.getPegi(),
+                entidad.getCategoria());
     }
 
     public static BibliotecaDto mapFrom(BibliotecaEntidad entidad){
@@ -50,13 +50,13 @@ public class Mapper {
             return null;
 
         return new BibliotecaDto(
-                entidad.id(),
-                entidad.idUsuario(),
-                entidad.idJuego(),
-                entidad.fechaAdquisicion(),
-                entidad.horasJuego(),
-                entidad.ultimaFechaJuego(),
-                entidad.estadoInstalacion());
+                entidad.getId(),
+                entidad.getIdUsuario(),
+                entidad.getIdJuego(),
+                entidad.getFechaAdquisicion(),
+                entidad.getHorasJuego(),
+                entidad.getUltimaFechaJuego(),
+                entidad.getEstadoInstalacion());
 
     }
 
@@ -65,14 +65,14 @@ public class Mapper {
             return null;
 
         return new CompraDto(
-                entidad.id(),
-                entidad.idUsuario(),
-                entidad.idJuego(),
-                entidad.fechaCompra(),
-                entidad.precioSinDescuento(),
-                entidad.descuento(),
-                entidad.metodopago(),
-                entidad.estado());
+                entidad.getId(),
+                entidad.getIdUsuario(),
+                entidad.getIdJuego(),
+                entidad.getFechaCompra(),
+                entidad.getPrecioSinDescuento(),
+                entidad.getDescuento(),
+                entidad.getMetodopago(),
+                entidad.getEstado());
 
     }
 
@@ -81,15 +81,15 @@ public class Mapper {
             return null;
 
         return new ReseniaDto(
-                entidad.id(),
-                entidad.idUsuario(),
-                entidad.idJuego(),
-                entidad.recomendado(),
-                entidad.textoResenia(),
-                entidad.horasHastaResenia(),
-                entidad.fechaPublicacion(),
-                entidad.fechaUltimaEdicion(),
-                entidad.estado());
+                entidad.getId(),
+                entidad.getIdUsuario(),
+                entidad.getIdJuego(),
+                entidad.isRecomendado(),
+                entidad.getTextoResenia(),
+                entidad.getHorasHastaResenia(),
+                entidad.getFechaPublicacion(),
+                entidad.getFechaUltimaEdicion(),
+                entidad.getEstado());
 
     }
 
