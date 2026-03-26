@@ -3,6 +3,7 @@ package org.adrian.controlador;
 import org.adrian.excepcion.ValidationExcepcion;
 import org.adrian.mapper.Mapper;
 import org.adrian.modelo.dto.BibliotecaDto;
+import org.adrian.modelo.dto.JuegoDto;
 import org.adrian.modelo.entidad.BibliotecaEntidad;
 import org.adrian.modelo.form.BibliotecaForm;
 import org.adrian.modelo.form.ErrorDto;
@@ -47,14 +48,14 @@ public class BibliotecaControlador {
         boolean usuarioExiste = bibliotecaRepo.obtenerTodos().stream()
                 .anyMatch(b -> b.getIdUsuario().equals(form.idUsuario()));
 
-        if(usuarioExiste){
+        if(!usuarioExiste){
             errores.add(new ErrorDto("usuario", ErrorType.DUPLICADO));
         }
 
         boolean juegoExiste = bibliotecaRepo.obtenerTodos().stream()
                 .anyMatch(b -> b.getIdJuego().equals(form.idJuego()));
 
-        if(juegoExiste){
+        if(!juegoExiste){
             errores.add(new ErrorDto("juego", ErrorType.DUPLICADO));
         }
 
@@ -76,31 +77,58 @@ public class BibliotecaControlador {
 
     }
 
-    public int eliminarJuegoBiblioteca(Long idJuego, Long idUsuario) throws ValidationExcepcion{
+    public BibliotecaDto eliminarJuegoBiblioteca(Long idJuego, Long idUsuario) throws ValidationExcepcion{
 
         List<ErrorDto> errores = new ArrayList<ErrorDto>();
+
 
         boolean usuarioExiste = bibliotecaRepo.obtenerTodos().stream()
                 .anyMatch(b -> b.getIdUsuario().equals(idUsuario));
 
-        if(usuarioExiste){
+        if(!usuarioExiste){
             errores.add(new ErrorDto("usuario", ErrorType.DUPLICADO));
         }
 
         boolean juegoExiste = bibliotecaRepo.obtenerTodos().stream()
                 .anyMatch(b -> b.getIdJuego().equals(idJuego));
 
-        if(juegoExiste){
+        if(!juegoExiste){
             errores.add(new ErrorDto("juego", ErrorType.DUPLICADO));
+        }
+
+        var biblioteca = bibliotecaRepo.obtenerPorIdUsuarioIdJuego(idUsuario, idJuego);
+
+        if(biblioteca.isEmpty()){
+            errores.add(new ErrorDto("biblioteca", ErrorType.NO_ENCONTRADO));
+        }
+
+        var usuario = usuarioRepo.obtenerPorId(idUsuario);
+        var juego = juegoRepo.obtenerPorId(idJuego);
+
+        if(usuario.isEmpty()){
+            errores.add(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO));
+        }
+        if(juego.isEmpty()){
+            errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
         }
 
         if(!errores.isEmpty()){
             throw new ValidationExcepcion(errores);
         }
 
-        //Falta acabar
+        var usuarioEntidad = usuario.get();
+        var juegoEntidad = juego.get();
 
-        return 1;
+        var usuarioDto = Mapper.mapFrom(usuarioEntidad);
+        var juegoDto = Mapper.mapFrom(juegoEntidad);
+
+        var bibliotecaEntidad = biblioteca.get();
+
+        var idBiblioteca = bibliotecaEntidad.getId();
+
+        bibliotecaRepo.eliminar(idBiblioteca);
+
+        return Mapper.mapFrom(bibliotecaEntidad, usuarioDto, juegoDto);
 
     }
 

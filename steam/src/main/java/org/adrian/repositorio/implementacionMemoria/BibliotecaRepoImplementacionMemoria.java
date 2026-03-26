@@ -4,6 +4,7 @@ import org.adrian.modelo.entidad.BibliotecaEntidad;
 import org.adrian.modelo.form.BibliotecaForm;
 import org.adrian.repositorio.interfaces.IBibliotecaRepo;
 
+import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -55,6 +56,14 @@ public class BibliotecaRepoImplementacionMemoria implements IBibliotecaRepo {
                 .filter(b -> b.getIdUsuario().equals(idUsuario) && b.getIdJuego().equals(idJuego))
                 .findFirst();
     }
+
+    @Override
+    public Optional<BibliotecaEntidad> obtenerPorIdUsuarioIdJuego(Long idUsuario, Long idJuego){
+        return bibliotecas.stream()
+                .filter(b -> b.getIdUsuario().equals(idUsuario) && b.getIdJuego().equals(idJuego))
+                .findFirst();
+    }
+
 
     @Override
     public boolean eliminar(Long id) {
