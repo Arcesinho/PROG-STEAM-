@@ -83,18 +83,11 @@ public class BibliotecaControlador {
             errores.add(new ErrorDto("Juego", ErrorType.NO_ENCONTRADO));
         }
 
-        boolean usuarioExiste = bibliotecaRepo.obtenerTodos().stream()
-                .anyMatch(b -> b.getIdUsuario().equals(form.idUsuario()));
+        boolean bibliotecaDuplicada = bibliotecaRepo.obtenerTodos().stream()
+                .anyMatch(b -> b.getIdUsuario().equals(form.idUsuario()) && b.getIdJuego().equals(form.idJuego()));
 
-        if(!usuarioExiste){
-            errores.add(new ErrorDto("usuario", ErrorType.DUPLICADO));
-        }
-
-        boolean juegoExiste = bibliotecaRepo.obtenerTodos().stream()
-                .anyMatch(b -> b.getIdJuego().equals(form.idJuego()));
-
-        if(!juegoExiste){
-            errores.add(new ErrorDto("juego", ErrorType.DUPLICADO));
+        if(bibliotecaDuplicada){
+            errores.add(new ErrorDto("biblioteca", ErrorType.DUPLICADO));
         }
 
         if(!errores.isEmpty()){
@@ -124,14 +117,14 @@ public class BibliotecaControlador {
                 .anyMatch(b -> b.getIdUsuario().equals(idUsuario));
 
         if(!usuarioExiste){
-            errores.add(new ErrorDto("usuario", ErrorType.DUPLICADO));
+            errores.add(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO));
         }
 
         boolean juegoExiste = bibliotecaRepo.obtenerTodos().stream()
                 .anyMatch(b -> b.getIdJuego().equals(idJuego));
 
         if(!juegoExiste){
-            errores.add(new ErrorDto("juego", ErrorType.DUPLICADO));
+            errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
         }
 
         var biblioteca = bibliotecaRepo.obtenerPorIdUsuarioIdJuego(idUsuario, idJuego);
@@ -183,14 +176,14 @@ public class BibliotecaControlador {
                 .anyMatch(b -> b.getIdUsuario().equals(idUsuario));
 
         if(!usuarioExiste){
-            errores.add(new ErrorDto("usuario", ErrorType.DUPLICADO));
+            errores.add(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO));
         }
 
         boolean juegoExiste = bibliotecaRepo.obtenerTodos().stream()
                 .anyMatch(b -> b.getIdJuego().equals(idJuego));
 
         if(!juegoExiste){
-            errores.add(new ErrorDto("juego", ErrorType.DUPLICADO));
+            errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
         }
 
         var bibliotecaOpt = bibliotecaRepo.obtenerPorIdUsuarioIdJuego(idUsuario, idJuego);
@@ -240,14 +233,14 @@ public class BibliotecaControlador {
                 .anyMatch(b -> b.getIdUsuario().equals(idUsuario));
 
         if(!usuarioExiste){
-            errores.add(new ErrorDto("usuario", ErrorType.DUPLICADO));
+            errores.add(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO));
         }
 
         boolean juegoExiste = bibliotecaRepo.obtenerTodos().stream()
                 .anyMatch(b -> b.getIdJuego().equals(idJuego));
 
         if(!juegoExiste){
-            errores.add(new ErrorDto("juego", ErrorType.DUPLICADO));
+            errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
         }
 
         var bibliotecaOpt = bibliotecaRepo.obtenerPorIdUsuarioIdJuego(idUsuario, idJuego);

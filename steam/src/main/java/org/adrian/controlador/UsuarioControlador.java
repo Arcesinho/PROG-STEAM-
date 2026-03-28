@@ -111,18 +111,22 @@ public class UsuarioControlador {
             errores.add(new ErrorDto("idUsuario", ErrorType.NO_ENCONTRADO));
         }
 
+        if(!errores.isEmpty()){
+            throw new ValidationExcepcion(errores);
+        }
+
         var usuarioEncontrado = usuarioABuscarOpt.get();
 
         if(usuarioEncontrado.getEstado() != ESTADOCUENTA.ACTIVA){
-            errores.add(new ErrorDto("estado", ErrorType.FORMATO_INVALIDO));
+            errores.add(new ErrorDto("estado", ErrorType.USUARIO_INACTIVO));
         }
 
         if (cantidadAniadir < 0){
-            errores.add(new ErrorDto("cantidadAniadir", ErrorType.NO_ENCONTRADO));
+            errores.add(new ErrorDto("cantidadAniadir", ErrorType.VALOR_DEMASIADO_BAJO));
         }
 
-        if(!(cantidadAniadir < 5.00 || cantidadAniadir > 500.00)){
-            errores.add(new ErrorDto("cantidadAniadir", ErrorType.FORMATO_INVALIDO));
+        if (cantidadAniadir < 5.00 || cantidadAniadir > 500.00){
+            errores.add(new ErrorDto("cantidadAniadir", ErrorType.VALOR_DEMASIADO_BAJO));
         }
 
         if(!errores.isEmpty()){

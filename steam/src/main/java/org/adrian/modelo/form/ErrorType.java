@@ -9,6 +9,9 @@ public enum ErrorType {
     VALOR_DEMASIADO_BAJO("El valor es demasiado bajo"),
     NO_ENCONTRADO("No se encontró el elemento"),
     DUPLICADO("El elemento está duplicado"),
+    SALDO_INSUFICIENTE("Saldo insuficiente para completar la compra"),
+    USUARIO_INACTIVO("El usuario no está en estado activo"),
+    JUEGO_NO_DISPONIBLE("El juego no está disponible"),
     FECHA_NO_VALIDA("Fecha no válida");
 
     private final String mensaje;

@@ -36,45 +36,40 @@ public class CompraControlador {
         var usuarioOpt = usuarioRepo.obtenerPorId(form.idUsuario());
         var juegoOpt = juegoRepo.obtenerPorId(form.idJuego());
 
-        if(usuarioOpt.isEmpty()){
-            errores.add(new ErrorDto("usuarioOpt", ErrorType.NO_ENCONTRADO));
+        if (usuarioOpt.isEmpty()) {
+            errores.add(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO));
         }
-        if(juegoOpt.isEmpty()){
-            errores.add(new ErrorDto("juegoOpt", ErrorType.NO_ENCONTRADO));
-        }
-
-        boolean usuarioExiste = compraRepo.obtenerTodos().stream()
-                .anyMatch(b -> b.getIdUsuario().equals(form.idUsuario()));
-
-        if(!usuarioExiste){
-            errores.add(new ErrorDto("usuario", ErrorType.DUPLICADO));
+        if (juegoOpt.isEmpty()) {
+            errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
         }
 
-        boolean juegoExiste = compraRepo.obtenerTodos().stream()
-                .anyMatch(b -> b.getIdJuego().equals(form.idJuego()));
+        List<CompraEntidad> compras = compraRepo.obtenerTodos();
+        boolean compraDuplicada = compras.stream()
+                .anyMatch(c -> c.getIdUsuario().equals(form.idUsuario()) && c.getIdJuego().equals(form.idJuego()));
 
-        if(!juegoExiste){
-            errores.add(new ErrorDto("juego", ErrorType.DUPLICADO));
+        if (compraDuplicada) {
+            errores.add(new ErrorDto("compra", ErrorType.DUPLICADO));
         }
+
 
         var usuarioEntidad = usuarioOpt.get();
         var juegoEntidad = juegoOpt.get();
 
-        if(!(usuarioEntidad.getEstado() == ESTADOCUENTA.ACTIVA)){
-            errores.add(new ErrorDto("usuarioEntidad", ErrorType.REQUERIDO));
+        if (!(usuarioEntidad.getEstado() == ESTADOCUENTA.ACTIVA)) {
+            errores.add(new ErrorDto("usuario", ErrorType.USUARIO_INACTIVO));
         }
 
-        if(!(juegoEntidad.getEstado() == ESTADOJUEGO.DISPONIBLE)){
-            errores.add(new ErrorDto("juegoEntidad", ErrorType.REQUERIDO));
+        if (!(juegoEntidad.getEstado() == ESTADOJUEGO.DISPONIBLE)) {
+            errores.add(new ErrorDto("juego", ErrorType.JUEGO_NO_DISPONIBLE));
         }
 
-        if(form.metodopago() == METODOPAGOCOMPRA.CARTERA_STEAM){
-            if(usuarioEntidad.getSaldoCartera() <= juegoEntidad.getPrecioBase()){
-                errores.add(new ErrorDto("saldoCartera", ErrorType.VALOR_DEMASIADO_BAJO));
+        if (form.metodopago() == METODOPAGOCOMPRA.CARTERA_STEAM) {
+            if (usuarioEntidad.getSaldoCartera() < juegoEntidad.getPrecioBase()) {
+                errores.add(new ErrorDto("saldoCartera", ErrorType.SALDO_INSUFICIENTE));
             }
         }
 
-        if(!errores.isEmpty()){
+        if (!errores.isEmpty()) {
             throw new ValidationExcepcion(errores);
         }
 

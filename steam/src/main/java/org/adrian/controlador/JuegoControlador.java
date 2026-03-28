@@ -95,11 +95,11 @@ public class JuegoControlador {
             errores.add(new ErrorDto("descuento", ErrorType.FORMATO_INVALIDO));
         }
 
-        var JuegoEncontrado = JuegoABuscarOpt.get();
-
         if(!errores.isEmpty()){
             throw new ValidationExcepcion(errores);
         }
+
+        var JuegoEncontrado = JuegoABuscarOpt.get();
 
         Double nuevoPrecio = JuegoEncontrado.getPrecioBase() - (JuegoEncontrado.getPrecioBase()*0.01*descuento);
 
@@ -124,11 +124,11 @@ public class JuegoControlador {
             errores.add(new ErrorDto("estadojuego", ErrorType.FORMATO_INVALIDO));
         }
 
-        var JuegoEncontrado = JuegoABuscarOpt.get();
-
         if(!errores.isEmpty()){
             throw new ValidationExcepcion(errores);
         }
+
+        var JuegoEncontrado = JuegoABuscarOpt.get();
 
         var JuegoActualizado = juegoRepo.actualizar(id, new JuegoForm(JuegoEncontrado.getTituloJuego(), Optional.ofNullable(JuegoEncontrado.getDescripcion()), JuegoEncontrado.getDesarrollador(), JuegoEncontrado.getFechaLanzamiento(),
                 JuegoEncontrado.getPrecioBase(), Optional.of(JuegoEncontrado.getDescuentoActual()), JuegoEncontrado.getPegi(), Optional.ofNullable(JuegoEncontrado.getIdiomas()), estadojuego, JuegoEncontrado.getCategoria()));
