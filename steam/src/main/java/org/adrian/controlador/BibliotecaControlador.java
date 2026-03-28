@@ -72,11 +72,8 @@ public class BibliotecaControlador {
 
         List<ErrorDto> errores = form.validar();
 
-        var idJuego = form.idJuego();
-        var idUsuairo = form.idUsuario();
-
-        var usuario = usuarioRepo.obtenerPorId(idUsuairo);
-        var juego = juegoRepo.obtenerPorId(idJuego);
+        var usuario = usuarioRepo.obtenerPorId(form.idUsuario());
+        var juego = juegoRepo.obtenerPorId(form.idJuego());
 
         if(usuario.isEmpty()){
             errores.add(new ErrorDto("Usuario", ErrorType.NO_ENCONTRADO));
@@ -232,6 +229,56 @@ public class BibliotecaControlador {
 
         return Mapper.mapFrom(bibliotecaActualizadaEntidad, usuarioDto, juegoDto);
 
+    }
+
+    public BibliotecaDto consultarUltimaSesionJuego(Long idUsuario, Long idJuego) throws ValidationExcepcion{
+
+        List<ErrorDto> errores = new ArrayList<ErrorDto>();
+
+
+        boolean usuarioExiste = bibliotecaRepo.obtenerTodos().stream()
+                .anyMatch(b -> b.getIdUsuario().equals(idUsuario));
+
+        if(!usuarioExiste){
+            errores.add(new ErrorDto("usuario", ErrorType.DUPLICADO));
+        }
+
+        boolean juegoExiste = bibliotecaRepo.obtenerTodos().stream()
+                .anyMatch(b -> b.getIdJuego().equals(idJuego));
+
+        if(!juegoExiste){
+            errores.add(new ErrorDto("juego", ErrorType.DUPLICADO));
+        }
+
+        var bibliotecaOpt = bibliotecaRepo.obtenerPorIdUsuarioIdJuego(idUsuario, idJuego);
+
+        if(bibliotecaOpt.isEmpty()){
+            errores.add(new ErrorDto("bibliotecaOpt", ErrorType.NO_ENCONTRADO));
+        }
+
+        var usuarioOpt = usuarioRepo.obtenerPorId(idUsuario);
+        var juegoOpt = juegoRepo.obtenerPorId(idJuego);
+
+        if(usuarioOpt.isEmpty()){
+            errores.add(new ErrorDto("usuarioOpt", ErrorType.NO_ENCONTRADO));
+        }
+        if(juegoOpt.isEmpty()){
+            errores.add(new ErrorDto("juegoOpt", ErrorType.NO_ENCONTRADO));
+        }
+
+        if(!errores.isEmpty()){
+            throw new ValidationExcepcion(errores);
+        }
+
+        var usuarioEntidad = usuarioOpt.get();
+        var juegoEntidad = juegoOpt.get();
+
+        var usuarioDto = Mapper.mapFrom(usuarioEntidad);
+        var juegoDto = Mapper.mapFrom(juegoEntidad);
+
+        var bibliotecaEntidad = bibliotecaOpt.get();
+
+        return  Mapper.mapFrom(bibliotecaEntidad, usuarioDto, juegoDto);
     }
 
 }

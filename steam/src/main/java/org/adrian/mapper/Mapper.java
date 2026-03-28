@@ -62,7 +62,7 @@ public class Mapper {
 
     }
 
-    public static CompraDto mapFrom (CompraEntidad entidad){
+    public static CompraDto mapFrom (CompraEntidad entidad, UsuarioDto usuario, JuegoDto juego){
         if(entidad == null)
             return null;
 
@@ -70,6 +70,8 @@ public class Mapper {
                 entidad.getId(),
                 entidad.getIdUsuario(),
                 entidad.getIdJuego(),
+                usuario,
+                juego,
                 entidad.getFechaCompra(),
                 entidad.getPrecioSinDescuento(),
                 entidad.getDescuento(),
