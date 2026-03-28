@@ -51,6 +51,9 @@ public class CompraControlador {
             errores.add(new ErrorDto("compra", ErrorType.DUPLICADO));
         }
 
+        if (!errores.isEmpty()) {
+            throw new ValidationExcepcion(errores);
+        }
 
         var usuarioEntidad = usuarioOpt.get();
         var juegoEntidad = juegoOpt.get();
