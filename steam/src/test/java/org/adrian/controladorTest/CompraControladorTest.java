@@ -81,11 +81,11 @@ class CompraControladorTest {
 
     @Test
     void testRealizarCompraExitosa() throws ValidationExcepcion {
-        Long usuarioId = crearUsuarioActivo();
+        Long usuarioId = crearUsuarioActivo().;
         Long juegoId = crearJuegoDisponible();
 
         var compraResult = controlador.realizarCompraJuego(
-                new CompraForm(null, usuarioId, juegoId, 20.0, Optional.of(0), METODOPAGOCOMPRA.CARTERA_STEAM, ESTADOCOMPRA.COMPLETADA)
+                new CompraForm(null, usuarioId, juegoId, 20.0, Optional.of(0), METODOPAGOCOMPRA.CARTERA_STEAM, Optional.of(ESTADOCOMPRA.COMPLETADA))
         );
 
         assertNotNull(compraResult);
@@ -100,12 +100,12 @@ class CompraControladorTest {
         Long juegoId = crearJuegoDisponible();
 
         controlador.realizarCompraJuego(
-                new CompraForm(null, usuarioId, juegoId, 20.0, Optional.of(0), METODOPAGOCOMPRA.CARTERA_STEAM, ESTADOCOMPRA.COMPLETADA)
+                new CompraForm(null, usuarioId, juegoId, 20.0, Optional.of(0), METODOPAGOCOMPRA.CARTERA_STEAM, Optional.of(ESTADOCOMPRA.COMPLETADA))
         );
 
         assertThrows(ValidationExcepcion.class, () -> {
             controlador.realizarCompraJuego(
-                    new CompraForm(null, usuarioId, juegoId, 20.0, Optional.of(0), METODOPAGOCOMPRA.CARTERA_STEAM, ESTADOCOMPRA.COMPLETADA)
+                    new CompraForm(null, usuarioId, juegoId, 20.0, Optional.of(0), METODOPAGOCOMPRA.CARTERA_STEAM, Optional.of(ESTADOCOMPRA.COMPLETADA))
             );
         });
     }
@@ -116,7 +116,7 @@ class CompraControladorTest {
 
         assertThrows(ValidationExcepcion.class, () -> {
             controlador.realizarCompraJuego(
-                    new CompraForm(null, 9999L, juegoId, 20.0, Optional.of(0), METODOPAGOCOMPRA.CARTERA_STEAM, ESTADOCOMPRA.COMPLETADA)
+                    new CompraForm(null, 9999L, juegoId, 20.0, Optional.of(0), METODOPAGOCOMPRA.CARTERA_STEAM, Optional.of(ESTADOCOMPRA.COMPLETADA))
             );
         });
     }
@@ -143,6 +143,58 @@ class CompraControladorTest {
         assertThrows(ValidationExcepcion.class, () -> {
             controlador.realizarCompraJuego(
                     new CompraForm(null, usuarioDto.id(), juegoId, 20.0, Optional.of(0), METODOPAGOCOMPRA.CARTERA_STEAM, ESTADOCOMPRA.COMPLETADA)
+            );
+        });
+    }
+
+    @Test
+    void testRealizarCompraUsuarioInactivoLanzaExcepcion() throws ValidationExcepcion {
+        var usuarioDto = new UsuarioControlador(usuarioRepo).registrarNuevoUsuario(
+                new UsuarioForm(
+                        "user3",
+                        "user3@example.com",
+                        "Pass1234",
+                        "User 3",
+                        "Spain",
+                        LocalDate.of(1990, 1, 1),
+                        Optional.empty(),
+                        100.0,
+                        ESTADOCUENTA.SUSPENDIDA
+                )
+        );
+
+        Long juegoId = crearJuegoDisponible();
+
+        assertThrows(ValidationExcepcion.class, () -> {
+            controlador.realizarCompraJuego(
+                    new CompraForm(null, usuarioDto.id(), juegoId, 20.0, Optional.of(0), METODOPAGOCOMPRA.CARTERA_STEAM, Optional.of(ESTADOCOMPRA.COMPLETADA))
+            );
+        });
+    }
+
+    @Test
+    void testRealizarCompraJuegoNoDisponibleLanzaExcepcion() throws ValidationExcepcion {
+        Long usuarioId = crearUsuarioActivo();
+
+        var juegoOpt = juegoRepo.crear(new JuegoForm(
+                "TestGame2",
+                Optional.of("Game description"),
+                "DevCompany",
+                LocalDateTime.of(2020, 1, 1, 0, 0),
+                20.0,
+                Optional.of(0),
+                PEGIJUEGO.PEGI_3,
+                Optional.of(new String[]{"EN"}),
+                ESTADOJUEGO.NO_DISPONIBLE,
+                CATEGORIAJUEGO.ACCION
+        ));
+
+        assertTrue(juegoOpt.isPresent());
+        Long juegoId = juegoOpt.get().getId();
+
+        assertThrows(ValidationExcepcion.class, () -> {
+            controlador.realizarCompraJuego(
+                    new CompraForm(null, usuarioId, juegoId, 20.0, Optional.of(0), METODOPAGOCOMPRA.CARTERA_STEAM, Optional.of(ESTADOCOMPRA.COMPLETADA))
             );
         });
     }

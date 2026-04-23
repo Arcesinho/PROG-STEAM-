@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public record CompraForm (Long id, Long idUsuario, Long idJuego, Double precioSinDescuento, Optional<Integer> descuento, METODOPAGOCOMPRA metodopago, ESTADOCOMPRA estado){
+public record CompraForm (Long id, Long idUsuario, Long idJuego, Double precioSinDescuento, Optional<Integer> descuento, METODOPAGOCOMPRA metodopago, Optional<ESTADOCOMPRA> estado){
 
     public static final int MIN_DESCUENTO = 0;
     public static final int MAX_DESCUENTO = 100;

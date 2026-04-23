@@ -1,6 +1,7 @@
 package org.adrian.repositorio.implementacionMemoria;
 
 import org.adrian.modelo.entidad.CompraEntidad;
+import org.adrian.modelo.enums.ESTADOCOMPRA;
 import org.adrian.modelo.form.CompraForm;
 import org.adrian.repositorio.interfaces.ICompraRepo;
 
@@ -22,7 +23,7 @@ public class CompraRepoImplementacionMemoria implements ICompraRepo {
     @Override
     public Optional<CompraEntidad> crear(CompraForm form) {
 
-        var juego = new CompraEntidad(idCounter++, form.idUsuario(), form.idJuego(), fechaCompra(), form.precioSinDescuento(), form.descuento().orElse(null), form.metodopago(), form.estado());
+        var juego = new CompraEntidad(idCounter++, form.idUsuario(), form.idJuego(), fechaCompra(), form.precioSinDescuento(), form.descuento().orElse(0), form.metodopago(), form.estado().orElse(ESTADOCOMPRA.PENDIENTE));
         compras.add(juego);
 
         return Optional.of(juego);
