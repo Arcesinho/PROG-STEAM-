@@ -74,4 +74,11 @@ public class ReseniaRepoImplementacionMemoria implements IReseniaRepo {
     public boolean eliminar(Long id) {
         return resenias.removeIf(u -> u.getId().equals(id));
     }
+
+    @Override
+    public Optional<ReseniaEntidad> obtenerPorUsuarioYJuego(Long idUsuario, Long idJuego) {
+        return resenias.stream()
+                .filter(r -> r.getIdUsuario().equals(idUsuario) && r.getIdJuego().equals(idJuego))
+                .findFirst();
+    }
 }

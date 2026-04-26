@@ -28,9 +28,7 @@ public record ReseniaForm (Long id, Long idUsuario, Long idJuego, boolean recome
 
         //Validaciones de recomendado
 
-        if (recomendado){
-            errores.add(new ErrorDto("recomendado", ErrorType.REQUERIDO));
-        }
+        // No se requiere validación específica para recomendado (boolean)
 
         //Validaciones de textoResenia
 
