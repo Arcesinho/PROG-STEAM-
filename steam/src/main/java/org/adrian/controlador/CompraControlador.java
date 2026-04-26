@@ -12,6 +12,7 @@ import org.adrian.modelo.form.CompraForm;
 import org.adrian.modelo.form.ErrorDto;
 import org.adrian.modelo.form.ErrorType;
 import org.adrian.modelo.form.UsuarioForm;
+import org.adrian.repositorio.interfaces.IBibliotecaRepo;
 import org.adrian.repositorio.interfaces.ICompraRepo;
 import org.adrian.repositorio.interfaces.IJuegoRepo;
 import org.adrian.repositorio.interfaces.IUsuarioRepo;
@@ -27,11 +28,13 @@ public class CompraControlador {
     private final ICompraRepo compraRepo;
     private final IJuegoRepo juegoRepo;
     private final IUsuarioRepo usuarioRepo;
+    private final IBibliotecaRepo bibliotecaRepo;
 
-    public CompraControlador(ICompraRepo compraRepo, IJuegoRepo juegoRepo, IUsuarioRepo usuarioRepo) {
+    public CompraControlador(ICompraRepo compraRepo, IJuegoRepo juegoRepo, IUsuarioRepo usuarioRepo, IBibliotecaRepo bibliotecaRepo) {
         this.compraRepo = compraRepo;
         this.juegoRepo = juegoRepo;
         this.usuarioRepo = usuarioRepo;
+        this.bibliotecaRepo = bibliotecaRepo;
     }
 
     public CompraDto realizarCompraJuego(CompraForm form) throws ValidationExcepcion{
@@ -256,8 +259,14 @@ public class CompraControlador {
             }
         }
 
-        if (compra.getHorasJugadas() != null && compra.getHorasJugadas() > HORAS_JUGADAS_LIMITE) {
-            errores.add(new ErrorDto("horasJugadas", ErrorType.LIMITE_EXCEDIDO));
+        var bibliotecaOpt = bibliotecaRepo.obtenerPorIdUsuarioIdJuego(compra.getIdUsuario(), compra.getIdJuego());
+        if (bibliotecaOpt.isEmpty()) {
+            errores.add(new ErrorDto("biblioteca", ErrorType.NO_ENCONTRADO));
+        } else {
+            var biblioteca = bibliotecaOpt.get();
+            if (biblioteca.getHorasJuego() != null && biblioteca.getHorasJuego() > HORAS_JUGADAS_LIMITE) {
+                errores.add(new ErrorDto("horasJuego", ErrorType.LIMITE_EXCEDIDO));
+            }
         }
 
         if (!errores.isEmpty()) {

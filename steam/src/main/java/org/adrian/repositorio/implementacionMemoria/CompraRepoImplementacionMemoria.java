@@ -15,7 +15,6 @@ public class CompraRepoImplementacionMemoria implements ICompraRepo {
     private static final List<CompraEntidad> compras = new ArrayList<>();
     private static Long idCounter = 1L;
     private LocalDateTime fechaCompra() {
-        LocalDateTime.now();
         return LocalDateTime.now();
     }
 
@@ -23,10 +22,10 @@ public class CompraRepoImplementacionMemoria implements ICompraRepo {
     @Override
     public Optional<CompraEntidad> crear(CompraForm form) {
 
-        var juego = new CompraEntidad(idCounter++, form.idUsuario(), form.idJuego(), fechaCompra(), form.precioSinDescuento(), form.descuento().orElse(0), form.metodopago(), form.estado().orElse(ESTADOCOMPRA.PENDIENTE));
-        compras.add(juego);
+        var compra = new CompraEntidad(idCounter++, form.idUsuario(), form.idJuego(), fechaCompra(), form.precioSinDescuento(), form.descuento().orElse(0), form.metodopago(), form.estado().orElse(ESTADOCOMPRA.PENDIENTE));
+        compras.add(compra);
 
-        return Optional.of(juego);
+        return Optional.of(compra);
     }
 
     @Override
@@ -48,11 +47,19 @@ public class CompraRepoImplementacionMemoria implements ICompraRepo {
             throw new IllegalArgumentException("Compra no encontrado");
         }
 
-        var compraActualizada = new CompraEntidad(id, form.idUsuario(), form.idJuego(), fechaCompra(), form.precioSinDescuento(), form.descuento().orElse(null), form.metodopago(), ESTADOCOMPRA.COMPLETADA);
+        var compraExistente = compraOpt.get();
+        var compraActualizada = new CompraEntidad(id, form.idUsuario(), form.idJuego(), compraExistente.getFechaCompra(), form.precioSinDescuento(), form.descuento().orElse(0), form.metodopago(), form.estado().orElse(ESTADOCOMPRA.COMPLETADA));
         compras.removeIf(u -> u.getId().equals(id));
         compras.add(compraActualizada);
 
         return Optional.of(compraActualizada);
+    }
+
+    @Override
+    public List<CompraEntidad> obtenerPorUsuario(Long idUsuario) {
+        return compras.stream()
+                .filter(c -> c.getIdUsuario().equals(idUsuario))
+                .toList();
     }
 
     @Override

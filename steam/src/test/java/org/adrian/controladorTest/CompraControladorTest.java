@@ -12,9 +12,11 @@ import org.adrian.modelo.enums.PEGIJUEGO;
 import org.adrian.modelo.form.CompraForm;
 import org.adrian.modelo.form.JuegoForm;
 import org.adrian.modelo.form.UsuarioForm;
+import org.adrian.repositorio.implementacionMemoria.BibliotecaRepoImplementacionMemoria;
 import org.adrian.repositorio.implementacionMemoria.CompraRepoImplementacionMemoria;
 import org.adrian.repositorio.implementacionMemoria.JuegoRepoImplementacionMemoria;
 import org.adrian.repositorio.implementacionMemoria.UsuarioRepoImplementacionMemoria;
+import org.adrian.repositorio.interfaces.IBibliotecaRepo;
 import org.adrian.repositorio.interfaces.ICompraRepo;
 import org.adrian.repositorio.interfaces.IJuegoRepo;
 import org.adrian.repositorio.interfaces.IUsuarioRepo;
@@ -32,6 +34,7 @@ class CompraControladorTest {
     private ICompraRepo compraRepo;
     private IJuegoRepo juegoRepo;
     private IUsuarioRepo usuarioRepo;
+    private IBibliotecaRepo bibliotecaRepo;
     private CompraControlador controlador;
 
     @BeforeEach
@@ -39,8 +42,9 @@ class CompraControladorTest {
         compraRepo = new CompraRepoImplementacionMemoria();
         juegoRepo = new JuegoRepoImplementacionMemoria();
         usuarioRepo = new UsuarioRepoImplementacionMemoria();
+        bibliotecaRepo = new BibliotecaRepoImplementacionMemoria();
 
-        controlador = new CompraControlador(compraRepo, juegoRepo, usuarioRepo);
+        controlador = new CompraControlador(compraRepo, juegoRepo, usuarioRepo, bibliotecaRepo);
     }
 
     private Long crearUsuarioActivo() throws ValidationExcepcion {

@@ -12,7 +12,10 @@ public enum ErrorType {
     SALDO_INSUFICIENTE("Saldo insuficiente para completar la compra"),
     USUARIO_INACTIVO("El usuario no está en estado activo"),
     JUEGO_NO_DISPONIBLE("El juego no está disponible"),
-    FECHA_NO_VALIDA("Fecha no válida");
+    FECHA_NO_VALIDA("Fecha no válida"),
+    FUERA_DE_PLAZO("La operación no se puede realizar fuera del plazo permitido para el reembolso"),
+    LIMITE_EXCEDIDO("Se ha excedido el límite permitido de horas para reembolsar");
+    
 
     private final String mensaje;
 
