@@ -11,12 +11,16 @@ import org.adrian.modelo.enums.METODOPAGOCOMPRA;
 import org.adrian.modelo.form.CompraForm;
 import org.adrian.modelo.form.ErrorDto;
 import org.adrian.modelo.form.ErrorType;
+import org.adrian.modelo.form.UsuarioForm;
 import org.adrian.repositorio.interfaces.ICompraRepo;
 import org.adrian.repositorio.interfaces.IJuegoRepo;
 import org.adrian.repositorio.interfaces.IUsuarioRepo;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 public class CompraControlador {
 
@@ -31,8 +35,14 @@ public class CompraControlador {
     }
 
     public CompraDto realizarCompraJuego(CompraForm form) throws ValidationExcepcion{
-
-        List<ErrorDto> errores = form.validar();
+        List<ErrorDto> errores = new ArrayList<>();
+        
+        if (form == null) {
+            errores.add(new ErrorDto("formulario", ErrorType.REQUERIDO));
+            throw new ValidationExcepcion(errores);
+        }
+        
+        errores.addAll(form.validar());
 
         var usuarioOpt = usuarioRepo.obtenerPorId(form.idUsuario());
         var juegoOpt = juegoRepo.obtenerPorId(form.idJuego());
@@ -44,9 +54,10 @@ public class CompraControlador {
             errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
         }
 
-        List<CompraEntidad> compras = compraRepo.obtenerTodos();
-        boolean compraDuplicada = compras.stream()
-                .anyMatch(c -> c.getIdUsuario().equals(form.idUsuario()) && c.getIdJuego().equals(form.idJuego()));
+        // Verificar compra duplicada: usuario no puede comprar el mismo juego dos veces
+        List<CompraEntidad> comprasUsuario = compraRepo.obtenerPorUsuario(form.idUsuario());
+        boolean compraDuplicada = comprasUsuario.stream()
+                .anyMatch(c -> c.getIdJuego().equals(form.idJuego()));
 
         if (compraDuplicada) {
             errores.add(new ErrorDto("compra", ErrorType.DUPLICADO));
@@ -59,29 +70,37 @@ public class CompraControlador {
         var usuarioEntidad = usuarioOpt.get();
         var juegoEntidad = juegoOpt.get();
 
-        if (!(usuarioEntidad.getEstado() == ESTADOCUENTA.ACTIVA)) {
+        if (usuarioEntidad.getEstado() != ESTADOCUENTA.ACTIVA) {
             errores.add(new ErrorDto("usuario", ErrorType.USUARIO_INACTIVO));
         }
 
-        if (!(juegoEntidad.getEstado() == ESTADOJUEGO.DISPONIBLE)) {
+        if (juegoEntidad.getEstado() != ESTADOJUEGO.DISPONIBLE) {
             errores.add(new ErrorDto("juego", ErrorType.JUEGO_NO_DISPONIBLE));
         }
 
+        // Validación de método de pago y saldo
         if (form.metodopago() == METODOPAGOCOMPRA.CARTERA_STEAM) {
             if (usuarioEntidad.getSaldoCartera() < juegoEntidad.getPrecioBase()) {
                 errores.add(new ErrorDto("saldoCartera", ErrorType.SALDO_INSUFICIENTE));
             }
+        } else if (form.metodopago() == null) {
+            errores.add(new ErrorDto("metodoPago", ErrorType.REQUERIDO));
         }
 
         if (!errores.isEmpty()) {
             throw new ValidationExcepcion(errores);
         }
 
+        // Crear la compra con estado PENDIENTE
         Optional<CompraEntidad> nuevaCompra = compraRepo.crear(form);
+        
+        if (nuevaCompra.isEmpty()) {
+            errores.add(new ErrorDto("compra", ErrorType.NO_ENCONTRADO));
+            throw new ValidationExcepcion(errores);
+        }
 
         var usuarioDto = Mapper.mapFrom(usuarioEntidad);
         var juegoDto = Mapper.mapFrom(juegoEntidad);
-
         var compra = nuevaCompra.get();
 
         return Mapper.mapFrom(compra, usuarioDto, juegoDto);
@@ -132,7 +151,7 @@ public class CompraControlador {
 
         if (compra.getMetodopago() == METODOPAGOCOMPRA.CARTERA_STEAM) {
             var usuarioForm = new UsuarioForm(
-                usuario.getNombreUsuario(),
+                usuario.getNombre(),
                 usuario.getEmail(),
                 usuario.getContrasenia(),
                 usuario.getNombreReal(),
@@ -162,6 +181,133 @@ public class CompraControlador {
         var juegoDto = Mapper.mapFrom(juegoOpt.get());
 
         return Mapper.mapFrom(updatedCompraOpt.get(), usuarioDto, juegoDto);
+    }
+
+    /**
+     * Ver información completa de una transacción
+     * @param idCompra ID de la compra a consultar
+     * @param idUsuario ID del usuario para verificar pertenencia
+     * @return CompraDTO con los detalles de la compra
+     * @throws ValidationExcepcion si la compra no existe o no pertenece al usuario
+     */
+    public CompraDto consultarDetallesCompra(Long idCompra, Long idUsuario) throws ValidationExcepcion {
+        List<ErrorDto> errores = new ArrayList<>();
+
+        var compraOpt = compraRepo.obtenerPorId(idCompra);
+        if (compraOpt.isEmpty()) {
+            errores.add(new ErrorDto("compra", ErrorType.NO_ENCONTRADO));
+            throw new ValidationExcepcion(errores);
+        }
+
+        var compra = compraOpt.get();
+
+        if (!compra.getIdUsuario().equals(idUsuario)) {
+            errores.add(new ErrorDto("compra", ErrorType.NO_ENCONTRADO));
+            throw new ValidationExcepcion(errores);
+        }
+
+        var usuarioOpt = usuarioRepo.obtenerPorId(idUsuario);
+        var juegoOpt = juegoRepo.obtenerPorId(compra.getIdJuego());
+
+        if (usuarioOpt.isEmpty() || juegoOpt.isEmpty()) {
+            errores.add(new ErrorDto("compra", ErrorType.NO_ENCONTRADO));
+        }
+
+        if (!errores.isEmpty()) {
+            throw new ValidationExcepcion(errores);
+        }
+
+
+        var usuarioDto = Mapper.mapFrom(usuarioOpt.get());
+        var juegoDto = Mapper.mapFrom(juegoOpt.get());
+
+        return Mapper.mapFrom(compra, usuarioDto, juegoDto);
+    }
+
+    /**
+     * Devolver una compra y reintegrar el dinero a la cartera
+     * @param idCompra ID de la compra a reembolsar
+     * @param motivoReembolso Motivo del reembolso
+     * @return CompraDTO con el estado actualizado
+     * @throws ValidationExcepcion si no cumple con las validaciones
+     */
+    public CompraDto solicitarReembolso(Long idCompra, String motivoReembolso) throws ValidationExcepcion {
+        List<ErrorDto> errores = new ArrayList<>();
+        final int PLAZO_REEMBOLSO_DIAS = 14;
+        final int HORAS_JUGADAS_LIMITE = 2;
+
+        var compraOpt = compraRepo.obtenerPorId(idCompra);
+        if (compraOpt.isEmpty()) {
+            errores.add(new ErrorDto("compra", ErrorType.NO_ENCONTRADO));
+            throw new ValidationExcepcion(errores);
+        }
+        var compra = compraOpt.get();
+
+        // Validar que la compra esté completada
+        if (compra.getEstado() != ESTADOCOMPRA.COMPLETADA) {
+            errores.add(new ErrorDto("compra", ErrorType.FORMATO_INVALIDO));
+        }
+
+        // Validar que esté dentro del plazo de reembolso
+        if (compra.getFechaCompra() != null) {
+            long diasTranscurridos = ChronoUnit.DAYS.between(compra.getFechaCompra(), LocalDateTime.now());
+            if (diasTranscurridos > PLAZO_REEMBOLSO_DIAS) {
+                errores.add(new ErrorDto("reembolso", ErrorType.FUERA_DE_PLAZO));
+            }
+        }
+
+        if (compra.getHorasJugadas() != null && compra.getHorasJugadas() > HORAS_JUGADAS_LIMITE) {
+            errores.add(new ErrorDto("horasJugadas", ErrorType.LIMITE_EXCEDIDO));
+        }
+
+        if (!errores.isEmpty()) {
+            throw new ValidationExcepcion(errores);
+        }
+
+        var usuarioOpt = usuarioRepo.obtenerPorId(compra.getIdUsuario());
+        if (usuarioOpt.isEmpty()) {
+            errores.add(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO));
+            throw new ValidationExcepcion(errores);
+        }
+
+        var usuario = usuarioOpt.get();
+        double precioReembolso = compra.getPrecioSinDescuento() * (1 - compra.getDescuento() / 100.0);
+
+        // Actualizar saldo de la cartera del usuario
+        var usuarioForm = new UsuarioForm(
+            usuario.getNombre(),
+            usuario.getEmail(),
+            usuario.getContrasenia(),
+            usuario.getNombreReal(),
+            usuario.getPais(),
+            usuario.getFechaNacimiento(),
+            Optional.ofNullable(usuario.getAvatar()),
+            usuario.getSaldoCartera() + precioReembolso,
+            usuario.getEstado()
+        );
+
+
+
+        usuarioRepo.actualizar(usuario.getId(), usuarioForm);
+        usuario = usuarioRepo.obtenerPorId(usuario.getId()).get();
+
+        // Cambiar estado de la compra a reembolsada
+        var compraForm = new CompraForm(
+            compra.getId(),
+            compra.getIdUsuario(),
+            compra.getIdJuego(),
+            compra.getPrecioSinDescuento(),
+            Optional.of(compra.getDescuento()),
+            compra.getMetodopago(),
+            Optional.of(ESTADOCOMPRA.REEMBOLSADA)
+        );
+        var compraActualizada = compraRepo.actualizar(compra.getId(), compraForm);
+
+        var usuarioDto = Mapper.mapFrom(usuario);
+        var juegoOpt = juegoRepo.obtenerPorId(compra.getIdJuego());
+        var juegoDto = Mapper.mapFrom(juegoOpt.get());
+
+        return Mapper.mapFrom(compraActualizada.get(), usuarioDto, juegoDto);
     }
 
 }

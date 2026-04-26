@@ -48,7 +48,7 @@ public class CompraRepoImplementacionMemoria implements ICompraRepo {
             throw new IllegalArgumentException("Compra no encontrado");
         }
 
-        var compraActualizada = new CompraEntidad(id, form.idUsuario(), form.idJuego(), fechaCompra(), form.precioSinDescuento(), form.descuento().orElse(null), form.metodopago(), form.estado());
+        var compraActualizada = new CompraEntidad(id, form.idUsuario(), form.idJuego(), fechaCompra(), form.precioSinDescuento(), form.descuento().orElse(null), form.metodopago(), ESTADOCOMPRA.COMPLETADA);
         compras.removeIf(u -> u.getId().equals(id));
         compras.add(compraActualizada);
 

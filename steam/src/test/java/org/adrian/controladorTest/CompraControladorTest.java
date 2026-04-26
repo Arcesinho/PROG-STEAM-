@@ -81,7 +81,7 @@ class CompraControladorTest {
 
     @Test
     void testRealizarCompraExitosa() throws ValidationExcepcion {
-        Long usuarioId = crearUsuarioActivo().;
+        Long usuarioId = crearUsuarioActivo();
         Long juegoId = crearJuegoDisponible();
 
         var compraResult = controlador.realizarCompraJuego(
@@ -142,7 +142,7 @@ class CompraControladorTest {
 
         assertThrows(ValidationExcepcion.class, () -> {
             controlador.realizarCompraJuego(
-                    new CompraForm(null, usuarioDto.id(), juegoId, 20.0, Optional.of(0), METODOPAGOCOMPRA.CARTERA_STEAM, ESTADOCOMPRA.COMPLETADA)
+                    new CompraForm(null, usuarioDto.id(), juegoId, 20.0, Optional.of(0), METODOPAGOCOMPRA.CARTERA_STEAM, Optional.of(ESTADOCOMPRA.COMPLETADA))
             );
         });
     }
