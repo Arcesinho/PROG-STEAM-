@@ -215,7 +215,7 @@ public class BibliotecaControlador {
         var bibliotecaEncontrada = bibliotecaOpt.get();
 
         var bibliotecaActualizada = bibliotecaRepo.actualizar(bibliotecaEncontrada.getId(), new BibliotecaForm(bibliotecaEncontrada.getId(), idUsuario, idJuego,
-                bibliotecaEncontrada.getFechaAdquisicion(), horas, bibliotecaEncontrada.getUltimaFechaJuego(),
+                bibliotecaEncontrada.getFechaAdquisicion(), horas, Optional.ofNullable(bibliotecaEncontrada.getUltimaFechaJuego()),
                 bibliotecaEncontrada.getEstadoInstalacion()));
 
         var bibliotecaActualizadaEntidad = bibliotecaActualizada.get();

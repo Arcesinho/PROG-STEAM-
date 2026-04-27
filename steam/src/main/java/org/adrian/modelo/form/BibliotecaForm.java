@@ -6,9 +6,10 @@ import org.adrian.recursos.ComprobarDosDecimales;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public record BibliotecaForm(Long id, Long idUsuario, Long idJuego, LocalDateTime fechaAdquisicion, Double horasJuego,
-                             LocalDateTime ultimaFechaJuego,
+                             Optional<LocalDateTime> ultimaFechaJuego,
                              ESTADOINSTALACIONBIBLIOTECA estadoInstalacion) {
 
     public List<ErrorDto> validar() {
@@ -47,11 +48,15 @@ public record BibliotecaForm(Long id, Long idUsuario, Long idJuego, LocalDateTim
 
         //Validaciones de última fecha de juego
 
-        if (ultimaFechaJuego == null || ultimaFechaJuego.isAfter(LocalDateTime.now())) {
-            errores.add(new ErrorDto("ultimaFechaJuego", ErrorType.FECHA_NO_VALIDA));
-        }
-        if (ultimaFechaJuego == null || ultimaFechaJuego.isBefore(fechaAdquisicion)) {
-            errores.add(new ErrorDto("ultimaFechaJuego", ErrorType.FECHA_NO_VALIDA));
+        if(ultimaFechaJuego.isPresent()){
+            var ufj = ultimaFechaJuego.get();
+
+            if (ufj.isAfter(LocalDateTime.now())) {
+                errores.add(new ErrorDto("ultimaFechaJuego", ErrorType.FECHA_NO_VALIDA));
+            }
+            if (ufj.isBefore(fechaAdquisicion)) {
+                errores.add(new ErrorDto("ultimaFechaJuego", ErrorType.FECHA_NO_VALIDA));
+            }
         }
 
         return errores;

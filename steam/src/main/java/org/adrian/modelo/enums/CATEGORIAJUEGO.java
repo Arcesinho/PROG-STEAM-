@@ -1,4 +1,4 @@
 package org.adrian.modelo.enums;
 
-public enum CATEGORIAJUEGO{ACCION, AVENTURA, RPG, SHOOTER}
+public enum CATEGORIAJUEGO{ACCION, AVENTURA, RPG, SHOOTER, ESTRATEGIA, PUZZLE}
 

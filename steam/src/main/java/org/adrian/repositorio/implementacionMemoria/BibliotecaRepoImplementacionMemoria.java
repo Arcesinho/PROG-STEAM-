@@ -18,7 +18,7 @@ public class BibliotecaRepoImplementacionMemoria implements IBibliotecaRepo {
     @Override
     public Optional<BibliotecaEntidad> crear(BibliotecaForm form) {
 
-        var biblioteca = new BibliotecaEntidad(idCounter++, form.idUsuario(), form.idJuego(), form.fechaAdquisicion(), form.horasJuego(), form.ultimaFechaJuego(), form.estadoInstalacion());
+        var biblioteca = new BibliotecaEntidad(idCounter++, form.idUsuario(), form.idJuego(), form.fechaAdquisicion(), form.horasJuego(), form.ultimaFechaJuego().orElse(null), form.estadoInstalacion());
         bibliotecas.add(biblioteca);
 
         return Optional.of(biblioteca);
@@ -43,7 +43,7 @@ public class BibliotecaRepoImplementacionMemoria implements IBibliotecaRepo {
             throw new IllegalArgumentException("Biblioteca no encontrado");
         }
 
-        var bibliotecaActualizada = new BibliotecaEntidad(id, form.idUsuario(), form.idJuego(), form.fechaAdquisicion(), form.horasJuego(), form.ultimaFechaJuego(), form.estadoInstalacion());
+        var bibliotecaActualizada = new BibliotecaEntidad(id, form.idUsuario(), form.idJuego(), form.fechaAdquisicion(), form.horasJuego(), form.ultimaFechaJuego().orElse(null), form.estadoInstalacion());
         bibliotecas.removeIf(u -> u.getId().equals(id));
         bibliotecas.add(bibliotecaActualizada);
 
