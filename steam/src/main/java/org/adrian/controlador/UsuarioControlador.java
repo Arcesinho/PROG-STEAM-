@@ -63,11 +63,11 @@ public class UsuarioControlador {
 
     public UsuarioDto consultarPerfilUsuarioPorId(Long id) throws ValidationExcepcion{
 
-        List<ErrorDto> errores = new ArrayList<ErrorDto>();
+        List<ErrorDto> errores = new ArrayList<>();
 
         var usuarioABuscarOpt = usuarioRepo.obtenerPorId(id);
 
-        if(usuarioABuscarOpt.isEmpty()){
+        if(!(usuarioABuscarOpt.isPresent())){
             errores.add(new ErrorDto("idUsuario", ErrorType.NO_ENCONTRADO));
         }
 
@@ -75,9 +75,8 @@ public class UsuarioControlador {
             throw new ValidationExcepcion(errores);
         }
 
-        var usuarioEncontrado = usuarioABuscarOpt.get();
 
-        return Mapper.mapFrom(usuarioEncontrado);
+        return Mapper.mapFrom(usuarioABuscarOpt.orElse(null));
 
     }
 
@@ -96,9 +95,8 @@ public class UsuarioControlador {
             throw new ValidationExcepcion(errores);
         }
 
-        var usuarioEncontrado = usuarioABuscarOpt.getFirst();
 
-        return Mapper.mapFrom(usuarioEncontrado);
+        return Mapper.mapFrom(usuarioABuscarOpt.stream().findFirst().orElse(null));
     }
 
     public UsuarioDto aniadirSaldoCarteraUsuario(Long id, Double cantidadAniadir) throws ValidationExcepcion{

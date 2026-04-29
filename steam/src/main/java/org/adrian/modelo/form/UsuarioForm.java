@@ -58,7 +58,7 @@ public record UsuarioForm(String nombreUsuario, String email, String contrasenia
 
         //Validaciones del form para el nombreUsuario
 
-        if (nombreUsuario == null) {
+        if (nombreUsuario == null || nombreUsuario.isBlank()) {
             errores.add(new ErrorDto("nombreUsuario", ErrorType.REQUERIDO));
         }
         if (nombreUsuario == null || Character.isDigit(nombreUsuario.charAt(0))) {
@@ -76,7 +76,7 @@ public record UsuarioForm(String nombreUsuario, String email, String contrasenia
 
         //Validaciones del form para el email
 
-        if(email == null) {
+        if(email == null || email.isBlank()){
             errores.add(new ErrorDto("email", ErrorType.REQUERIDO));
         }
         if (!matcher.matches()) {
@@ -118,20 +118,20 @@ public record UsuarioForm(String nombreUsuario, String email, String contrasenia
 
         //Validaciones del form para  la fechaNacimiento
 
-        if (fechaNacimiento == null) {
+        if (fechaNacimiento == null || fechaNacimiento.toString().isBlank()) {
             errores.add(new ErrorDto("fechaNacimiento", ErrorType.REQUERIDO));
         }
-        if(fechaNacimiento == null || edadEnAnios.getYears() < MIN_EDADNACIMIENTO){
+        else if(fechaNacimiento == null || edadEnAnios.getYears() < MIN_EDADNACIMIENTO){
             errores.add(new ErrorDto("fechaNacimiento", ErrorType.FECHA_NO_VALIDA));
         }
-        if(fechaNacimiento == null || fechaNacimiento.isAfter(LocalDate.now())){
+        else if(fechaNacimiento == null || fechaNacimiento.isAfter(LocalDate.now())){
             errores.add(new ErrorDto("fechaNacimiento", ErrorType.FECHA_NO_VALIDA));
         }
 
         //Validaciones del avatar
 
         var av = avatar.orElse(null);
-        if(av == null || av.length() > MAX_LENG_AVATAR){
+        if( av.length() > MAX_LENG_AVATAR){
             errores.add(new ErrorDto("avatar", ErrorType.VALOR_DEMASIADO_ALTO));
         }
 
