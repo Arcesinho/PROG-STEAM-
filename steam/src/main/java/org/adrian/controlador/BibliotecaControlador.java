@@ -15,17 +15,34 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Controlador de la biblioteca personal de juegos de cada usuario.
+ * Gestiona la adición, eliminación y consulta de juegos en la biblioteca,
+ * así como el seguimiento del tiempo de juego.
+ */
 public class BibliotecaControlador {
 
     private final IBibliotecaRepo bibliotecaRepo;
     private final IJuegoRepo juegoRepo;
     private final IUsuarioRepo usuarioRepo;
 
+    /**
+     * @param bibliotecaRepo repositorio de entradas de biblioteca
+     * @param juegoRepo      repositorio de juegos
+     * @param usuarioRepo    repositorio de usuarios
+     */
     public BibliotecaControlador(IBibliotecaRepo bibliotecaRepo, IJuegoRepo juegoRepo, IUsuarioRepo usuarioRepo){this.bibliotecaRepo = bibliotecaRepo;
         this.juegoRepo = juegoRepo;
         this.usuarioRepo = usuarioRepo;
     }
 
+    /**
+     * Devuelve todos los juegos que forman parte de la biblioteca de un usuario.
+     *
+     * @param idUsuario identificador del usuario
+     * @return lista de DTOs con cada entrada de la biblioteca
+     * @throws ValidationExcepcion si el usuario no existe o no tiene juegos en su biblioteca
+     */
     public List<BibliotecaDto> verBibliotecaPersonal(Long idUsuario) throws ValidationExcepcion {
 
         List<ErrorDto> errores = new ArrayList<ErrorDto>();
@@ -68,6 +85,13 @@ public class BibliotecaControlador {
 
     }
 
+    /**
+     * Añade un juego a la biblioteca de un usuario, evitando duplicados.
+     *
+     * @param form datos de la nueva entrada de biblioteca
+     * @return DTO de la entrada creada
+     * @throws ValidationExcepcion si el usuario o el juego no existen, o el juego ya está en la biblioteca
+     */
     public BibliotecaDto aniadirJuegoABiblioteca(BibliotecaForm form) throws ValidationExcepcion {
 
         List<ErrorDto> errores = form.validar();
@@ -108,6 +132,14 @@ public class BibliotecaControlador {
 
     }
 
+    /**
+     * Elimina un juego de la biblioteca de un usuario.
+     *
+     * @param idJuego   identificador del juego a eliminar
+     * @param idUsuario identificador del usuario propietario
+     * @return DTO de la entrada eliminada
+     * @throws ValidationExcepcion si el usuario, el juego o la entrada de biblioteca no existen
+     */
     public BibliotecaDto eliminarJuegoBiblioteca(Long idJuego, Long idUsuario) throws ValidationExcepcion{
 
         List<ErrorDto> errores = new ArrayList<ErrorDto>();
@@ -163,6 +195,16 @@ public class BibliotecaControlador {
 
     }
 
+    /**
+     * Actualiza el total de horas jugadas de un usuario en un juego concreto.
+     *
+     * @param idUsuario identificador del usuario
+     * @param idJuego   identificador del juego
+     * @param horas     nuevo total de horas jugadas (debe ser ≥ 0)
+     * @return DTO de la entrada actualizada
+     * @throws ValidationExcepcion si el usuario, el juego o la entrada de biblioteca no existen,
+     *                             o las horas son negativas
+     */
     public BibliotecaDto actualizarTiempoJuegoUsuario(Long idUsuario, Long idJuego, Double horas) throws ValidationExcepcion{
 
         List<ErrorDto> errores = new ArrayList<ErrorDto>();
@@ -224,6 +266,15 @@ public class BibliotecaControlador {
 
     }
 
+    /**
+     * Recupera la información de la última sesión de juego de un usuario en un juego concreto,
+     * incluyendo la fecha de última conexión y las horas acumuladas.
+     *
+     * @param idUsuario identificador del usuario
+     * @param idJuego   identificador del juego
+     * @return DTO con los datos de la entrada de biblioteca (incluye {@code ultimaFechaJuego} y {@code horasJuego})
+     * @throws ValidationExcepcion si el usuario, el juego o la entrada de biblioteca no existen
+     */
     public BibliotecaDto consultarUltimaSesionJuego(Long idUsuario, Long idJuego) throws ValidationExcepcion{
 
         List<ErrorDto> errores = new ArrayList<ErrorDto>();

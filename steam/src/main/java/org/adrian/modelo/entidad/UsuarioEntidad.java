@@ -6,6 +6,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+/**
+ * Entidad que representa un usuario de la plataforma.
+ * Contiene todos los datos de la cuenta, incluyendo credenciales, perfil y saldo de cartera.
+ */
 public class UsuarioEntidad {
 
     private Long id;

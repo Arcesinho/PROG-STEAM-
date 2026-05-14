@@ -1,5 +1,9 @@
 package org.adrian.modelo.form;
 
+/**
+ * Enumeración de tipos de error de validación utilizados en los formularios y controladores.
+ * Cada constante incluye un mensaje descriptivo accesible por reflexión o logging.
+ */
 public enum ErrorType {
 
     REQUERIDO("El campo es obligatorio"),

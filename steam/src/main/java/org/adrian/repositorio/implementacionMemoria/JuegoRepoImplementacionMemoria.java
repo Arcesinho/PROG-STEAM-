@@ -8,6 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Implementación en memoria del repositorio de juegos.
+ * Almacena las entidades en una lista estática y genera identificadores secuenciales.
+ * Esta implementación es útil para pruebas y prototipos; no persiste datos entre ejecuciones.
+ */
 public class JuegoRepoImplementacionMemoria implements IJuegoRepo {
 
     private static final List<JuegoEntidad> juegos = new ArrayList<>();

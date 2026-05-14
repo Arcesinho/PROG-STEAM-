@@ -23,6 +23,10 @@ import java.util.Optional;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
+/**
+ * Controlador de transacciones de compra de juegos.
+ * Gestiona el flujo completo de una compra: creación, pago y reembolso.
+ */
 public class CompraControlador {
 
     private final ICompraRepo compraRepo;
@@ -30,6 +34,12 @@ public class CompraControlador {
     private final IUsuarioRepo usuarioRepo;
     private final IBibliotecaRepo bibliotecaRepo;
 
+    /**
+     * @param compraRepo    repositorio de compras
+     * @param juegoRepo     repositorio de juegos
+     * @param usuarioRepo   repositorio de usuarios
+     * @param bibliotecaRepo repositorio de biblioteca (necesario para validar horas jugadas en reembolsos)
+     */
     public CompraControlador(ICompraRepo compraRepo, IJuegoRepo juegoRepo, IUsuarioRepo usuarioRepo, IBibliotecaRepo bibliotecaRepo) {
         this.compraRepo = compraRepo;
         this.juegoRepo = juegoRepo;
@@ -37,6 +47,15 @@ public class CompraControlador {
         this.bibliotecaRepo = bibliotecaRepo;
     }
 
+    /**
+     * Inicia el proceso de compra de un juego creando una transacción en estado PENDIENTE.
+     * Valida que el usuario esté activo, el juego disponible, no sea una compra duplicada
+     * y, si el método de pago es la cartera Steam, que haya saldo suficiente.
+     *
+     * @param form datos de la compra a realizar
+     * @return DTO de la compra creada con estado {@link ESTADOCOMPRA#PENDIENTE}
+     * @throws ValidationExcepcion si alguna validación falla
+     */
     public CompraDto realizarCompraJuego(CompraForm form) throws ValidationExcepcion{
         List<ErrorDto> errores = new ArrayList<>();
         
@@ -110,6 +129,16 @@ public class CompraControlador {
 
     }
 
+    /**
+     * Procesa el pago de una compra en estado PENDIENTE y la marca como COMPLETADA.
+     * Si el método de pago es {@link METODOPAGOCOMPRA#CARTERA_STEAM} descuenta el importe
+     * del saldo del usuario; para otros métodos requiere {@code datosPago} no nulo.
+     *
+     * @param idCompra  identificador de la compra a procesar
+     * @param datosPago datos del medio de pago externo (requerido si no es cartera Steam)
+     * @return DTO de la compra con estado {@link ESTADOCOMPRA#COMPLETADA}
+     * @throws ValidationExcepcion si la compra no existe, no está pendiente o no hay saldo suficiente
+     */
     public CompraDto procesarPago(Long idCompra, String datosPago) throws ValidationExcepcion {
         List<ErrorDto> errores = new ArrayList<>();
 

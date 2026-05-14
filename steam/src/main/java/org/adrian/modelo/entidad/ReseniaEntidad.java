@@ -5,6 +5,11 @@ import org.adrian.modelo.enums.ESTADORESENIA;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+/**
+ * Entidad que representa la reseña de un usuario sobre un juego.
+ * Recoge si el juego es recomendado, el texto de la reseña, las horas jugadas
+ * en el momento de escribirla y las fechas de publicación y última edición.
+ */
 public class ReseniaEntidad {
 
     private Long id;

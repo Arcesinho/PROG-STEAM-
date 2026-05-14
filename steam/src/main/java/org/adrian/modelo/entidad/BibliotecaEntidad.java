@@ -5,6 +5,10 @@ import org.adrian.modelo.enums.ESTADOINSTALACIONBIBLIOTECA;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+/**
+ * Entidad que representa la entrada de un juego en la biblioteca personal de un usuario.
+ * Registra cuándo se adquirió el juego, las horas jugadas y el estado de instalación.
+ */
 public class BibliotecaEntidad {
 
     private Long id;

@@ -9,6 +9,32 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.time.LocalDate;
 
+/**
+ * Formulario de entrada para crear o actualizar un usuario.
+ * Contiene las reglas de validación del dominio aplicadas en {@link #validar()}.
+ *
+ * <p>Restricciones principales:
+ * <ul>
+ *   <li>Nombre de usuario: 3–20 caracteres, solo letras, dígitos, guiones y guiones bajos; no puede empezar por número.</li>
+ *   <li>Email: formato estándar (regex).</li>
+ *   <li>Contraseña: mínimo 8 caracteres con al menos una mayúscula, una minúscula y un dígito.</li>
+ *   <li>Nombre real: 2–50 caracteres.</li>
+ *   <li>País: código de país ISO válido.</li>
+ *   <li>Fecha de nacimiento: edad mínima de 13 años y no puede ser futura.</li>
+ *   <li>Avatar: opcional, máximo 100 caracteres.</li>
+ *   <li>Saldo de cartera: no negativo, máximo 2 decimales.</li>
+ * </ul>
+ *
+ * @param nombreUsuario nombre de usuario único en la plataforma
+ * @param email         dirección de correo electrónico
+ * @param contrasenia   contraseña en texto plano (pendiente de hashear)
+ * @param nombreReal    nombre real del usuario
+ * @param pais          país de residencia (nombre completo según {@link java.util.Locale})
+ * @param fechaNacimiento fecha de nacimiento
+ * @param avatar        URL o ruta opcional del avatar
+ * @param saldoCartera  saldo inicial de la cartera (≥ 0)
+ * @param estado        estado inicial de la cuenta
+ */
 public record UsuarioForm(String nombreUsuario, String email, String contrasenia, String nombreReal, String pais, LocalDate fechaNacimiento,
                           Optional<String> avatar, Double saldoCartera, ESTADOCUENTA estado) {
 
@@ -20,6 +46,11 @@ public record UsuarioForm(String nombreUsuario, String email, String contrasenia
     public static final int MIN_EDADNACIMIENTO = 13;
     public static final int MAX_LENG_AVATAR = 100;
 
+    /**
+     * Valida todos los campos del formulario según las reglas de negocio.
+     *
+     * @return lista de {@link ErrorDto} con los errores encontrados; vacía si todo es correcto
+     */
     public List<ErrorDto> validar() {
 
         var errores = new ArrayList<ErrorDto>();
