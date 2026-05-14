@@ -5,8 +5,18 @@ import org.adrian.modelo.dto.*;
 import org.adrian.modelo.entidad.*;
 
 
+/**
+ * Clase de utilidad estática para convertir entidades de dominio a objetos de transferencia de datos (DTO).
+ * Devuelve {@code null} si la entidad recibida es {@code null}.
+ */
 public class Mapper {
 
+    /**
+     * Convierte una {@link UsuarioEntidad} en un {@link UsuarioDto}.
+     *
+     * @param entidad entidad a convertir
+     * @return DTO equivalente, o {@code null} si {@code entidad} es {@code null}
+     */
     public static UsuarioDto mapFrom(UsuarioEntidad entidad){
 
         if(entidad == null)
@@ -25,6 +35,12 @@ public class Mapper {
                 entidad.getEstado());
     }
 
+    /**
+     * Convierte una {@link JuegoEntidad} en un {@link JuegoDto}.
+     *
+     * @param entidad entidad a convertir
+     * @return DTO equivalente, o {@code null} si {@code entidad} es {@code null}
+     */
     public static JuegoDto mapFrom(JuegoEntidad entidad){
 
         if(entidad == null)
@@ -44,6 +60,15 @@ public class Mapper {
                 entidad.getCategoria());
     }
 
+    /**
+     * Convierte una {@link BibliotecaEntidad} en un {@link BibliotecaDto} enriquecido con los DTOs
+     * del usuario y del juego correspondientes.
+     *
+     * @param entidad entidad de biblioteca a convertir
+     * @param usuario DTO del usuario propietario
+     * @param juego   DTO del juego asociado
+     * @return DTO equivalente, o {@code null} si {@code entidad} es {@code null}
+     */
     public static BibliotecaDto mapFrom(BibliotecaEntidad entidad, UsuarioDto usuario, JuegoDto juego){
 
         if(entidad == null)
@@ -62,6 +87,15 @@ public class Mapper {
 
     }
 
+    /**
+     * Convierte una {@link CompraEntidad} en un {@link CompraDto} enriquecido con los DTOs
+     * del usuario y del juego.
+     *
+     * @param entidad entidad de compra a convertir
+     * @param usuario DTO del usuario comprador
+     * @param juego   DTO del juego comprado
+     * @return DTO equivalente, o {@code null} si {@code entidad} es {@code null}
+     */
     public static CompraDto mapFrom (CompraEntidad entidad, UsuarioDto usuario, JuegoDto juego){
         if(entidad == null)
             return null;
@@ -80,6 +114,12 @@ public class Mapper {
 
     }
 
+    /**
+     * Convierte una {@link ReseniaEntidad} en un {@link ReseniaDto}.
+     *
+     * @param entidad entidad de reseña a convertir
+     * @return DTO equivalente, o {@code null} si {@code entidad} es {@code null}
+     */
     public static ReseniaDto mapFrom (ReseniaEntidad entidad){
         if(entidad == null)
             return null;

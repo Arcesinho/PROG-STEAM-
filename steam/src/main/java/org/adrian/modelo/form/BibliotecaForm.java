@@ -8,10 +8,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Formulario de entrada para crear o actualizar una entrada en la biblioteca de un usuario.
+ *
+ * @param id                 identificador de la entrada (puede ser {@code null} en creación)
+ * @param idUsuario          identificador del usuario propietario
+ * @param idJuego            identificador del juego
+ * @param fechaAdquisicion   fecha y hora de adquisición (no puede ser futura)
+ * @param horasJuego         horas totales jugadas (≥ 0, máximo 2 decimales)
+ * @param ultimaFechaJuego   fecha y hora de la última sesión (opcional; entre adquisición y ahora)
+ * @param estadoInstalacion  estado de instalación del juego
+ */
 public record BibliotecaForm(Long id, Long idUsuario, Long idJuego, LocalDateTime fechaAdquisicion, Double horasJuego,
                              Optional<LocalDateTime> ultimaFechaJuego,
                              ESTADOINSTALACIONBIBLIOTECA estadoInstalacion) {
 
+    /**
+     * Valida todos los campos del formulario según las reglas de negocio.
+     *
+     * @return lista de {@link ErrorDto} con los errores encontrados; vacía si todo es correcto
+     */
     public List<ErrorDto> validar() {
 
         var errores = new ArrayList<ErrorDto>();

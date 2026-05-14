@@ -10,10 +10,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Implementación en memoria del repositorio de compras.
+ * Almacena las entidades en una lista estática y genera identificadores secuenciales.
+ * Al crear una compra, la fecha se registra automáticamente con el instante actual
+ * y el estado inicial es {@link ESTADOCOMPRA#PENDIENTE} si no se especifica otro.
+ * Esta implementación es útil para pruebas y prototipos; no persiste datos entre ejecuciones.
+ */
 public class CompraRepoImplementacionMemoria implements ICompraRepo {
 
     private static final List<CompraEntidad> compras = new ArrayList<>();
     private static Long idCounter = 1L;
+
+    /** @return la fecha y hora actuales usada como fecha de la compra */
     private LocalDateTime fechaCompra() {
         return LocalDateTime.now();
     }
@@ -55,6 +64,12 @@ public class CompraRepoImplementacionMemoria implements ICompraRepo {
         return Optional.of(compraActualizada);
     }
 
+    /**
+     * Devuelve todas las compras realizadas por un usuario concreto.
+     *
+     * @param idUsuario identificador del usuario
+     * @return lista de compras del usuario; vacía si no tiene ninguna
+     */
     @Override
     public List<CompraEntidad> obtenerPorUsuario(Long idUsuario) {
         return compras.stream()

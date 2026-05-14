@@ -8,11 +8,27 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Formulario de entrada para crear o actualizar una compra.
+ *
+ * @param id                 identificador de la compra (puede ser {@code null} en creación)
+ * @param idUsuario          identificador del usuario comprador
+ * @param idJuego            identificador del juego a comprar
+ * @param precioSinDescuento precio del juego antes de aplicar descuentos (≥ 0, máximo 2 decimales)
+ * @param descuento          porcentaje de descuento (opcional, 0–100)
+ * @param metodopago         método de pago a utilizar
+ * @param estado             estado de la compra (opcional; útil para actualizaciones)
+ */
 public record CompraForm (Long id, Long idUsuario, Long idJuego, Double precioSinDescuento, Optional<Integer> descuento, METODOPAGOCOMPRA metodopago, Optional<ESTADOCOMPRA> estado){
 
     public static final int MIN_DESCUENTO = 0;
     public static final int MAX_DESCUENTO = 100;
 
+    /**
+     * Valida todos los campos del formulario según las reglas de negocio.
+     *
+     * @return lista de {@link ErrorDto} con los errores encontrados; vacía si todo es correcto
+     */
     public List<ErrorDto> validar() {
 
         var errores = new ArrayList<ErrorDto>();

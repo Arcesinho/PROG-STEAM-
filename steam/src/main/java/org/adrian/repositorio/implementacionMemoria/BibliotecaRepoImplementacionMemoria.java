@@ -9,6 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Implementación en memoria del repositorio de entradas de biblioteca.
+ * Almacena las entidades en una lista estática y genera identificadores secuenciales.
+ * Esta implementación es útil para pruebas y prototipos; no persiste datos entre ejecuciones.
+ */
 public class BibliotecaRepoImplementacionMemoria implements IBibliotecaRepo {
 
     private static final List<BibliotecaEntidad> bibliotecas = new ArrayList<>();

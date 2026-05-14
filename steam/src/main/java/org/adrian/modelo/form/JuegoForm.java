@@ -10,6 +10,32 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Formulario de entrada para crear o actualizar un juego del catálogo.
+ * Contiene las reglas de validación del dominio aplicadas en {@link #validar()}.
+ *
+ * <p>Restricciones principales:
+ * <ul>
+ *   <li>Título: 1–100 caracteres, obligatorio.</li>
+ *   <li>Descripción: opcional, máximo 2000 caracteres.</li>
+ *   <li>Desarrollador: 2–100 caracteres, obligatorio.</li>
+ *   <li>Precio base: 0,00–999,99 con máximo 2 decimales.</li>
+ *   <li>Descuento: 0–100 (porcentaje).</li>
+ *   <li>Idiomas: mínimo 1, máximo 200.</li>
+ *   <li>PEGI, estado y categoría: obligatorios.</li>
+ * </ul>
+ *
+ * @param tituloJuego      título del juego
+ * @param descripcion      descripción larga (opcional)
+ * @param desarrollador    nombre del estudio desarrollador
+ * @param fechaLanzamiento fecha y hora de lanzamiento
+ * @param precioBase       precio base sin descuento
+ * @param descuentoActual  porcentaje de descuento (opcional, 0–100)
+ * @param pegi             clasificación de edad PEGI
+ * @param idiomas          lista de idiomas disponibles (opcional, mínimo 1)
+ * @param estado           estado de disponibilidad
+ * @param categoria        género del juego
+ */
 public record JuegoForm(String tituloJuego, Optional<String> descripcion, String desarrollador, LocalDateTime fechaLanzamiento,
                         Double precioBase, Optional<Integer> descuentoActual, PEGIJUEGO pegi, Optional<String[]> idiomas ,
                         ESTADOJUEGO estado, CATEGORIAJUEGO categoria) {
@@ -25,6 +51,11 @@ public record JuegoForm(String tituloJuego, Optional<String> descripcion, String
     public static final int MAX_DESCUENTOACTUAL = 100;
     public static final int MAX_LENG_IDIOMAS = 200;
 
+    /**
+     * Valida todos los campos del formulario según las reglas de negocio.
+     *
+     * @return lista de {@link ErrorDto} con los errores encontrados; vacía si todo es correcto
+     */
     public List<ErrorDto> validar() {
 
         var errores = new ArrayList<ErrorDto>();

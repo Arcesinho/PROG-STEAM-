@@ -8,6 +8,11 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Objects;
 
+/**
+ * Entidad que representa un juego del catálogo de la plataforma.
+ * Almacena el precio base, el descuento actual, los idiomas disponibles,
+ * la clasificación PEGI y la categoría del género.
+ */
 public class JuegoEntidad {
 
     private Long id;

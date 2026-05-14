@@ -10,6 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Implementación en memoria del repositorio de reseñas.
+ * Almacena las entidades en una lista estática y genera identificadores secuenciales.
+ * Al crear o actualizar una reseña, captura automáticamente las horas jugadas del usuario
+ * consultando el repositorio de biblioteca.
+ * Esta implementación es útil para pruebas y prototipos; no persiste datos entre ejecuciones.
+ */
 public class ReseniaRepoImplementacionMemoria implements IReseniaRepo {
 
     private static final List<ReseniaEntidad> resenias = new ArrayList<>();
@@ -17,11 +24,13 @@ public class ReseniaRepoImplementacionMemoria implements IReseniaRepo {
     private final BibliotecaRepoImplementacionMemoria bibliotecaRepo = new BibliotecaRepoImplementacionMemoria();
 
 
+    /** @return la fecha y hora actuales usada como fecha de publicación */
     private LocalDateTime fechaPublicacion() {
         LocalDateTime.now();
         return LocalDateTime.now();
     }
 
+    /** @return la fecha y hora actuales usada como fecha de última edición */
     private LocalDateTime fechaUltimaEdicion() {
         LocalDateTime.now();
         return LocalDateTime.now();
@@ -75,6 +84,13 @@ public class ReseniaRepoImplementacionMemoria implements IReseniaRepo {
         return resenias.removeIf(u -> u.getId().equals(id));
     }
 
+    /**
+     * Busca la reseña de un usuario sobre un juego concreto.
+     *
+     * @param idUsuario identificador del usuario autor
+     * @param idJuego   identificador del juego reseñado
+     * @return Optional con la reseña encontrada, o vacío si no existe
+     */
     @Override
     public Optional<ReseniaEntidad> obtenerPorUsuarioYJuego(Long idUsuario, Long idJuego) {
         return resenias.stream()

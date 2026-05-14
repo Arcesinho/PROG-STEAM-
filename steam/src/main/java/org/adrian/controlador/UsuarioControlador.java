@@ -16,15 +16,28 @@ import java.util.Objects;
 import java.util.Optional;
 
 
+/**
+ * Controlador de operaciones sobre cuentas de usuario.
+ * Gestiona el registro, consulta y actualización del saldo de la cartera.
+ */
 public class UsuarioControlador {
 
     private final IUsuarioRepo usuarioRepo;
 
-
+    /**
+     * @param usuarioRepo repositorio de usuarios que se usará para las operaciones de persistencia
+     */
     public UsuarioControlador(IUsuarioRepo usuarioRepo) {
         this.usuarioRepo = usuarioRepo;
     }
 
+    /**
+     * Registra un nuevo usuario validando que el email y el nombre de usuario sean únicos.
+     *
+     * @param form datos del nuevo usuario
+     * @return DTO con la información del usuario creado
+     * @throws ValidationExcepcion si el formulario contiene errores o el email/nombre ya existe
+     */
     public UsuarioDto registrarNuevoUsuario(UsuarioForm form) throws ValidationExcepcion {
 
         List<ErrorDto> errores = form.validar();
@@ -61,6 +74,13 @@ public class UsuarioControlador {
 
     }
 
+    /**
+     * Busca un usuario por su identificador único.
+     *
+     * @param id identificador del usuario
+     * @return DTO con el perfil del usuario encontrado
+     * @throws ValidationExcepcion si no existe ningún usuario con ese id
+     */
     public UsuarioDto consultarPerfilUsuarioPorId(Long id) throws ValidationExcepcion{
 
         List<ErrorDto> errores = new ArrayList<>();
@@ -80,6 +100,13 @@ public class UsuarioControlador {
 
     }
 
+    /**
+     * Busca un usuario por su nombre de usuario (case-sensitive).
+     *
+     * @param nombre nombre de usuario a buscar
+     * @return DTO con el perfil del usuario encontrado
+     * @throws ValidationExcepcion si no existe ningún usuario con ese nombre
+     */
     public UsuarioDto consultarPerfilUsuarioPorNombre(String nombre) throws ValidationExcepcion{
 
         var errores = new ArrayList<ErrorDto>();
@@ -99,6 +126,15 @@ public class UsuarioControlador {
         return Mapper.mapFrom(usuarioABuscarOpt.stream().findFirst().orElse(null));
     }
 
+    /**
+     * Añade saldo a la cartera del usuario. La cantidad debe estar entre 5,00 € y 500,00 €
+     * y el usuario debe tener la cuenta activa.
+     *
+     * @param id             identificador del usuario
+     * @param cantidadAniadir importe a añadir (rango válido: 5,00 – 500,00)
+     * @return DTO del usuario con el saldo actualizado
+     * @throws ValidationExcepcion si el usuario no existe, está inactivo o la cantidad está fuera del rango permitido
+     */
     public UsuarioDto aniadirSaldoCarteraUsuario(Long id, Double cantidadAniadir) throws ValidationExcepcion{
 
         var errores = new ArrayList<ErrorDto>();
@@ -142,6 +178,13 @@ public class UsuarioControlador {
         return Mapper.mapFrom(usuarioADevolver);
     }
 
+    /**
+     * Devuelve el saldo actual de la cartera de un usuario.
+     *
+     * @param id identificador del usuario
+     * @return saldo actual de la cartera
+     * @throws ValidationExcepcion si no existe ningún usuario con ese id
+     */
     public Double consultarSaldoCarteraUsuario(Long id) throws ValidationExcepcion{
 
         var errores = new ArrayList<ErrorDto>();

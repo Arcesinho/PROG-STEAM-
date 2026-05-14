@@ -6,6 +6,11 @@ import org.adrian.modelo.enums.METODOPAGOCOMPRA;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+/**
+ * Entidad que representa una transacción de compra de un juego.
+ * Recoge el precio sin descuento, el porcentaje de descuento aplicado,
+ * el método de pago utilizado y el estado de la transacción.
+ */
 public class CompraEntidad {
 
     private Long id;

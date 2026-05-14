@@ -14,12 +14,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Controlador del catálogo de juegos.
+ * Permite añadir juegos, consultar el catálogo, aplicar descuentos y cambiar el estado de disponibilidad.
+ */
 public class JuegoControlador {
 
     private final IJuegoRepo juegoRepo;
 
+    /**
+     * @param juegoRepo repositorio de juegos que se usará para las operaciones de persistencia
+     */
     public JuegoControlador(IJuegoRepo juegoRepo){ this.juegoRepo = juegoRepo;}
 
+    /**
+     * Añade un nuevo juego al catálogo validando que el título sea único.
+     *
+     * @param form datos del juego a registrar
+     * @return DTO con la información del juego creado
+     * @throws ValidationExcepcion si el formulario contiene errores o el título ya existe
+     */
     public JuegoDto aniadirNuevoJuego(JuegoForm form) throws ValidationExcepcion{
 
         List<ErrorDto> errores = form.validar();
@@ -42,6 +56,12 @@ public class JuegoControlador {
 
     }
 
+    /**
+     * Consulta todos los juegos disponibles en el catálogo.
+     *
+     * @return {@code true} si la operación se completó (pendiente de implementar la devolución de la lista)
+     * @throws ValidationExcepcion si el catálogo está vacío
+     */
     public boolean consultarCatalogoCompleto() throws ValidationExcepcion{
 
         List<ErrorDto> errores = new ArrayList<ErrorDto>();
@@ -63,6 +83,13 @@ public class JuegoControlador {
 
     }
 
+    /**
+     * Recupera el detalle completo de un juego por su identificador.
+     *
+     * @param id identificador del juego
+     * @return DTO con la información del juego
+     * @throws ValidationExcepcion si no existe ningún juego con ese id
+     */
     public JuegoDto consultarDetalleJuegoPorId(Long id) throws ValidationExcepcion{
 
         List<ErrorDto> errores = new ArrayList<ErrorDto>();
@@ -82,6 +109,15 @@ public class JuegoControlador {
         return Mapper.mapFrom(JuegoEncontrado); //Falta estadisticas y reseñas destacadas
     }
 
+    /**
+     * Aplica un porcentaje de descuento al precio base de un juego.
+     * El precio se recalcula como {@code precioBase * (1 - descuento/100)}.
+     *
+     * @param id       identificador del juego
+     * @param descuento porcentaje de descuento a aplicar (0–100)
+     * @return DTO del juego con el precio actualizado
+     * @throws ValidationExcepcion si el juego no existe o el descuento está fuera del rango permitido
+     */
     public JuegoDto aplicarDescuentoJuegoPorId(Long id, Integer descuento) throws ValidationExcepcion{
 
         List<ErrorDto> errores = new ArrayList<ErrorDto>();
@@ -111,6 +147,15 @@ public class JuegoControlador {
         return Mapper.mapFrom(JuegoADevolver);
     }
 
+    /**
+     * Cambia el estado de disponibilidad de un juego.
+     *
+     * @param id          identificador del juego
+     * @param estadojuego nuevo estado ({@link ESTADOJUEGO#DISPONIBLE}, {@link ESTADOJUEGO#NO_DISPONIBLE},
+     *                    {@link ESTADOJUEGO#PREVENTA} o {@link ESTADOJUEGO#ACCESO_ANTICIPADO})
+     * @return DTO del juego con el estado actualizado
+     * @throws ValidationExcepcion si el juego no existe o el estado no es válido
+     */
     public JuegoDto cambiarEstadoJuegoPorId(Long id, ESTADOJUEGO estadojuego) throws ValidationExcepcion{
 
         List<ErrorDto> errores = new ArrayList<ErrorDto>();

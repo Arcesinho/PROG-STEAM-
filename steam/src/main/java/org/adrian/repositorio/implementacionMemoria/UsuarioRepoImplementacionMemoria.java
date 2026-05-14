@@ -9,12 +9,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Implementación en memoria del repositorio de usuarios.
+ * Almacena las entidades en una lista estática y genera identificadores secuenciales.
+ * Esta implementación es útil para pruebas y prototipos; no persiste datos entre ejecuciones.
+ */
 public class UsuarioRepoImplementacionMemoria implements IUsuarioRepo {
 
 
     private static final List<UsuarioEntidad> usuarios = new ArrayList<>();
     private static Long idCounter = 1L;
 
+    /** @return la fecha y hora actuales usada como fecha de registro del usuario */
     private LocalDateTime fechaRegistro() {
         return LocalDateTime.now();
     }
