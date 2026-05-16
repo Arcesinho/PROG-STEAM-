@@ -69,9 +69,7 @@ public class BibliotecaControlador {
                 .filter(b -> b.getIdUsuario().equals(idUsuario)).toList();
 
 
-        var usuarioEntidad = usuarioOpt.get();
-
-        var usuarioDto = Mapper.mapFrom(usuarioEntidad);
+        var usuarioDto = Mapper.mapFrom(usuarioOpt.orElse(null));
 
         return bibliotecas.stream().map(
 
@@ -248,11 +246,8 @@ public class BibliotecaControlador {
             throw new ValidationExcepcion(errores);
         }
 
-        var usuarioEntidad = usuarioOpt.get();
-        var juegoEntidad = juegoOpt.get();
-        
-        var usuarioDto = Mapper.mapFrom(usuarioEntidad);
-        var juegoDto = Mapper.mapFrom(juegoEntidad);
+        var usuarioDto = Mapper.mapFrom(usuarioOpt.orElse(null));
+        var juegoDto = Mapper.mapFrom(juegoOpt.orElse(null));
 
         var bibliotecaEncontrada = bibliotecaOpt.get();
 

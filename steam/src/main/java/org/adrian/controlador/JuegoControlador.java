@@ -62,7 +62,7 @@ public class JuegoControlador {
      * @return {@code true} si la operación se completó (pendiente de implementar la devolución de la lista)
      * @throws ValidationExcepcion si el catálogo está vacío
      */
-    public boolean consultarCatalogoCompleto() throws ValidationExcepcion{
+    public List<JuegoDto> consultarCatalogoCompleto() throws ValidationExcepcion{
 
         List<ErrorDto> errores = new ArrayList<ErrorDto>();
 
@@ -76,10 +76,9 @@ public class JuegoControlador {
             throw new ValidationExcepcion(errores);
         }
 
-        var listaDeJuegosDTO = listadeJuegos.stream().toList();
-
-        return false;
-        //Falta acabar la devolucioón de una lista en este caso
+        return listadeJuegos.stream()
+                .map(Mapper::mapFrom)
+                .toList();
 
     }
 
@@ -104,9 +103,7 @@ public class JuegoControlador {
             throw new ValidationExcepcion(errores);
         }
 
-        var JuegoEncontrado = JuegoABuscarOpt.get();
-
-        return Mapper.mapFrom(JuegoEncontrado); //Falta estadisticas y reseñas destacadas
+        return Mapper.mapFrom(JuegoABuscarOpt.orElse(null)); //Falta estadisticas y reseñas destacadas
     }
 
     /**

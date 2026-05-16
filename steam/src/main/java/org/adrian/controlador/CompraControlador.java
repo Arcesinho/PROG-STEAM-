@@ -250,10 +250,10 @@ public class CompraControlador {
         }
 
 
-        var usuarioDto = Mapper.mapFrom(usuarioOpt.get());
-        var juegoDto = Mapper.mapFrom(juegoOpt.get());
+        var usuarioDto = Mapper.mapFrom(usuarioOpt.orElse(null));
+        var juegoDto = Mapper.mapFrom(juegoOpt.orElse(null));
 
-        return Mapper.mapFrom(compra, usuarioDto, juegoDto);
+        return Mapper.mapFrom(compraOpt.orElse(null), usuarioDto, juegoDto);
     }
 
     /**
