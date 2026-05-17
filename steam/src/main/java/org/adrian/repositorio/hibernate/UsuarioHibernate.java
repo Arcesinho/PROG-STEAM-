@@ -17,6 +17,8 @@ import org.adrian.repositorio.interfaces.IUsuarioRepo;
 public class UsuarioHibernate implements IUsuarioRepo {
 
     private ISesionManager sm;
+    private static Long idCounter = 1L;
+
 
     public UsuarioHibernate(ISesionManager sm) {
         this.sm = sm;
@@ -31,7 +33,7 @@ public class UsuarioHibernate implements IUsuarioRepo {
     public Optional<UsuarioEntidad> crear(UsuarioForm form) {
         var session = sm.getSession();
 
-        var usuario = new UsuarioEntidad((long) 0, form.nombreUsuario(), form.email(), form.contrasenia(), form.nombreReal(),
+        var usuario = new UsuarioEntidad(idCounter++, form.nombreUsuario(), form.email(), form.contrasenia(), form.nombreReal(),
                 form.pais(), form.fechaNacimiento(), fechaRegistro(), form.avatar().orElse(null), form.saldoCartera(),
                  form.estado());
         session.persist(usuario);
