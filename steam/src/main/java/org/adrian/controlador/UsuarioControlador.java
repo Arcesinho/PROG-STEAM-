@@ -3,12 +3,12 @@ package org.adrian.controlador;
 import org.adrian.excepcion.ValidationExcepcion;
 import org.adrian.mapper.Mapper;
 import org.adrian.modelo.dto.UsuarioDto;
-import org.adrian.modelo.entidad.UsuarioEntidad;
 import org.adrian.modelo.enums.ESTADOCUENTA;
 import org.adrian.modelo.form.ErrorDto;
 import org.adrian.modelo.form.ErrorType;
 import org.adrian.modelo.form.UsuarioForm;
 import org.adrian.repositorio.interfaces.*;
+import org.adrian.transaction.ITransactionManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,13 +23,16 @@ import java.util.Optional;
 public class UsuarioControlador {
 
     private final IUsuarioRepo usuarioRepo;
+    private final ITransactionManager tm;
 
 
     /**
      * @param usuarioRepo repositorio de usuarios que se usará para las operaciones de persistencia
+     * @param transactionManager gestor de transacciones Hibernate
      */
-    public UsuarioControlador(IUsuarioRepo usuarioRepo) {
+    public UsuarioControlador(IUsuarioRepo usuarioRepo, ITransactionManager tm) {
         this.usuarioRepo = usuarioRepo;
+        this.tm = tm;
     }
 
     /**
@@ -40,38 +43,37 @@ public class UsuarioControlador {
      * @throws ValidationExcepcion si el formulario contiene errores o el email/nombre ya existe
      */
     public UsuarioDto registrarNuevoUsuario(UsuarioForm form) throws ValidationExcepcion {
+       
+        var errores = form.validar();
 
-        List<ErrorDto> errores = form.validar();
+       
+        var usuario = tm.inTransaction(() -> {
 
-        //Validaciones si el email ya existe
+            //Validaciones si el email ya existe
+            boolean emailExiste = usuarioRepo.obtenerTodos().stream()
+                    .anyMatch(u -> u.getEmail().equalsIgnoreCase(form.email()));
+            if (emailExiste) {
+                errores.add(new ErrorDto("email", ErrorType.DUPLICADO));
+            }
 
-        boolean emailExiste = usuarioRepo.obtenerTodos().stream()
-                .anyMatch(u -> u.getEmail().equalsIgnoreCase(form.email()));
-        if (emailExiste) {
-            errores.add(new ErrorDto("email", ErrorType.DUPLICADO));
-        }
+            //Validaciones si el nombreUsuario ya existe
+            boolean nombreExiste = usuarioRepo.obtenerTodos().stream()
+                    .anyMatch(u -> u.getNombre().equalsIgnoreCase(form.nombreUsuario()));
+            if (nombreExiste) {
+                errores.add(new ErrorDto("nombreUsuario", ErrorType.DUPLICADO));
+            }
 
-        //Validaciones si el nombreUsuario ya existe
+            //Si hay errores los devolvemos
+            if (!errores.isEmpty()) {
+                throw new ValidationExcepcion(errores);
+            }
 
-        boolean nombreExiste = usuarioRepo.obtenerTodos().stream()
-                .anyMatch(u -> u.getNombre().equalsIgnoreCase(form.nombreUsuario()));
-        if (nombreExiste) {
-            errores.add(new ErrorDto("nombreUsuario", ErrorType.DUPLICADO));
-        }
-
-        //Si hay errores los devolvemos
-
-        if (!errores.isEmpty()) {
-            throw new ValidationExcepcion(errores);
-        }
-
-        Optional<UsuarioEntidad> nuevoUsuario = usuarioRepo.crear(form);
-
-
-        var usuarioEntidad = nuevoUsuario.orElseThrow(() -> new ValidationExcepcion(errores));
-
-        return Mapper.mapFrom(usuarioEntidad);
-
+            return usuarioRepo.crear(form);
+        });
+            if (!errores.isEmpty()) {
+                throw new ValidationExcepcion(errores);
+            }
+        return Mapper.mapFrom(usuario.orElse(null));
     }
 
     /**
@@ -108,22 +110,24 @@ public class UsuarioControlador {
      * @throws ValidationExcepcion si no existe ningún usuario con ese nombre
      */
     public UsuarioDto consultarPerfilUsuarioPorNombre(String nombre) throws ValidationExcepcion{
+        
+        var usuarioEntidad = tm.inTransaction(() -> {
+            var errores = new ArrayList<ErrorDto>();
 
-        var errores = new ArrayList<ErrorDto>();
+            var usuarioABuscarOpt = usuarioRepo.obtenerTodos().stream().filter(U -> Objects.equals(U.getNombre(), nombre)).toList();
 
-        var usuarioABuscarOpt = usuarioRepo.obtenerTodos().stream().filter(U -> Objects.equals(U.getNombre(), nombre)).toList();
+            if(usuarioABuscarOpt.isEmpty()){
+                errores.add(new ErrorDto("nombreUsuario", ErrorType.NO_ENCONTRADO));
+            }
 
+            if(!errores.isEmpty()){
+                throw new ValidationExcepcion(errores);
+            }
 
-        if(usuarioABuscarOpt.isEmpty()){
-            errores.add(new ErrorDto("nombreUsuario", ErrorType.NO_ENCONTRADO));
-        }
+            return usuarioABuscarOpt.stream().findFirst().orElse(null);
+        });
 
-        if(!errores.isEmpty()){
-            throw new ValidationExcepcion(errores);
-        }
-
-
-        return Mapper.mapFrom(usuarioABuscarOpt.stream().findFirst().orElse(null));
+        return Mapper.mapFrom(usuarioEntidad);
     }
 
     /**
@@ -136,44 +140,47 @@ public class UsuarioControlador {
      * @throws ValidationExcepcion si el usuario no existe, está inactivo o la cantidad está fuera del rango permitido
      */
     public UsuarioDto aniadirSaldoCarteraUsuario(Long id, Double cantidadAniadir) throws ValidationExcepcion{
+        
+        var usuarioADevolver = tm.inTransaction(() -> {
+            
+            var errores = new ArrayList<ErrorDto>();
 
-        var errores = new ArrayList<ErrorDto>();
+            var usuarioABuscarOpt = usuarioRepo.obtenerPorId(id);
 
-        var usuarioABuscarOpt = usuarioRepo.obtenerPorId(id);
+            if(usuarioABuscarOpt.isEmpty()){
+                errores.add(new ErrorDto("idUsuario", ErrorType.NO_ENCONTRADO));
+            }
 
-        if(usuarioABuscarOpt.isEmpty()){
-            errores.add(new ErrorDto("idUsuario", ErrorType.NO_ENCONTRADO));
-        }
+            if(!errores.isEmpty()){
+                throw new ValidationExcepcion(errores);
+            }
 
-        if(!errores.isEmpty()){
-            throw new ValidationExcepcion(errores);
-        }
+            var usuarioEncontrado = usuarioABuscarOpt.get();
 
-        var usuarioEncontrado = usuarioABuscarOpt.get();
+            if(usuarioEncontrado.getEstado() != ESTADOCUENTA.ACTIVA){
+                errores.add(new ErrorDto("estado", ErrorType.USUARIO_INACTIVO));
+            }
 
-        if(usuarioEncontrado.getEstado() != ESTADOCUENTA.ACTIVA){
-            errores.add(new ErrorDto("estado", ErrorType.USUARIO_INACTIVO));
-        }
+            if (cantidadAniadir < 5.00){
+                errores.add(new ErrorDto("cantidadAniadir", ErrorType.VALOR_DEMASIADO_BAJO));
+            }
 
-        if (cantidadAniadir < 5.00){
-            errores.add(new ErrorDto("cantidadAniadir", ErrorType.VALOR_DEMASIADO_BAJO));
-        }
+            if (cantidadAniadir > 500.00){
+                errores.add(new ErrorDto("cantidadAniadir", ErrorType.VALOR_DEMASIADO_ALTO));
+            }
 
-        if (cantidadAniadir > 500.00){
-            errores.add(new ErrorDto("cantidadAniadir", ErrorType.VALOR_DEMASIADO_ALTO));
-        }
+            if(!errores.isEmpty()){
+                throw new ValidationExcepcion(errores);
+            }
 
-        if(!errores.isEmpty()){
-            throw new ValidationExcepcion(errores);
-        }
+            var nuevoSaldo = usuarioEncontrado.getSaldoCartera() + cantidadAniadir;
 
-        var nuevoSaldo = usuarioEncontrado.getSaldoCartera() + cantidadAniadir;
+            var usuarioActualizado = usuarioRepo.actualizar(id,new UsuarioForm(usuarioEncontrado.getNombre(),usuarioEncontrado.getEmail(),
+                    usuarioEncontrado.getContrasenia(),usuarioEncontrado.getNombreReal(),usuarioEncontrado.getPais(),
+                    usuarioEncontrado.getFechaNacimiento(), Optional.ofNullable(usuarioEncontrado.getAvatar()), nuevoSaldo, usuarioEncontrado.getEstado()));
 
-        var usuarioActualizado = usuarioRepo.actualizar(id,new UsuarioForm(usuarioEncontrado.getNombre(),usuarioEncontrado.getEmail(),
-                usuarioEncontrado.getContrasenia(),usuarioEncontrado.getNombreReal(),usuarioEncontrado.getPais(),
-                usuarioEncontrado.getFechaNacimiento(), Optional.ofNullable(usuarioEncontrado.getAvatar()), nuevoSaldo, usuarioEncontrado.getEstado()));
-
-        var usuarioADevolver = usuarioActualizado.get();
+            return usuarioActualizado.get();
+        });
 
         return Mapper.mapFrom(usuarioADevolver);
     }
@@ -186,23 +193,24 @@ public class UsuarioControlador {
      * @throws ValidationExcepcion si no existe ningún usuario con ese id
      */
     public Double consultarSaldoCarteraUsuario(Long id) throws ValidationExcepcion{
+        var saldo = tm.inTransaction(() -> {
+            var errores = new ArrayList<ErrorDto>();
 
-        var errores = new ArrayList<ErrorDto>();
+            var usuarioABuscarOpt = usuarioRepo.obtenerPorId(id);
 
-        var usuarioABuscarOpt = usuarioRepo.obtenerPorId(id);
+            if(usuarioABuscarOpt.isEmpty()){
+                errores.add(new ErrorDto("idUsuario", ErrorType.NO_ENCONTRADO));
+            }
 
-        if(usuarioABuscarOpt.isEmpty()){
-            errores.add(new ErrorDto("idUsuario", ErrorType.NO_ENCONTRADO));
-        }
+            if(!errores.isEmpty()){
+                throw new ValidationExcepcion(errores);
+            }
 
-        if(!errores.isEmpty()){
-            throw new ValidationExcepcion(errores);
-        }
+            var usuarioEncontrado = usuarioABuscarOpt.get();
+            return usuarioEncontrado.getSaldoCartera();
+        });
 
-        var usuarioEncontrado = usuarioABuscarOpt.get();
-
-        return usuarioEncontrado.getSaldoCartera();
-
+        return saldo;
     }
 }
 
