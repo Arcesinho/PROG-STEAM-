@@ -155,12 +155,12 @@ public class UsuarioControlador {
             errores.add(new ErrorDto("estado", ErrorType.USUARIO_INACTIVO));
         }
 
-        if (cantidadAniadir < 0){
+        if (cantidadAniadir < 5.00){
             errores.add(new ErrorDto("cantidadAniadir", ErrorType.VALOR_DEMASIADO_BAJO));
         }
 
-        if (cantidadAniadir < 5.00 || cantidadAniadir > 500.00){
-            errores.add(new ErrorDto("cantidadAniadir", ErrorType.VALOR_DEMASIADO_BAJO));
+        if (cantidadAniadir > 500.00){
+            errores.add(new ErrorDto("cantidadAniadir", ErrorType.VALOR_DEMASIADO_ALTO));
         }
 
         if(!errores.isEmpty()){
@@ -173,7 +173,7 @@ public class UsuarioControlador {
                 usuarioEncontrado.getContrasenia(),usuarioEncontrado.getNombreReal(),usuarioEncontrado.getPais(),
                 usuarioEncontrado.getFechaNacimiento(), Optional.ofNullable(usuarioEncontrado.getAvatar()), nuevoSaldo, usuarioEncontrado.getEstado()));
 
-        var usuarioADevolver = usuarioActualizado.get();
+        var usuarioADevolver = usuarioActualizado.orElseThrow(() -> new ValidationExcepcion(List.of(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO))));
 
         return Mapper.mapFrom(usuarioADevolver);
     }

@@ -160,6 +160,7 @@ public class CompraControlador {
         var usuarioOpt = usuarioRepo.obtenerPorId(compra.getIdUsuario());
         if (usuarioOpt.isEmpty()) {
             errores.add(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO));
+            throw new ValidationExcepcion(errores);
         }
 
         var usuario = usuarioOpt.get();
@@ -210,6 +211,10 @@ public class CompraControlador {
 
         var usuarioDto = Mapper.mapFrom(usuario);
         var juegoOpt = juegoRepo.obtenerPorId(compra.getIdJuego());
+        if (juegoOpt.isEmpty()) {
+            errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
+            throw new ValidationExcepcion(errores);
+        }
         var juegoDto = Mapper.mapFrom(juegoOpt.get());
 
         return Mapper.mapFrom(updatedCompraOpt.get(), usuarioDto, juegoDto);
@@ -311,23 +316,22 @@ public class CompraControlador {
         var usuario = usuarioOpt.get();
         double precioReembolso = compra.getPrecioSinDescuento() * (1 - compra.getDescuento() / 100.0);
 
-        // Actualizar saldo de la cartera del usuario
-        var usuarioForm = new UsuarioForm(
-            usuario.getNombre(),
-            usuario.getEmail(),
-            usuario.getContrasenia(),
-            usuario.getNombreReal(),
-            usuario.getPais(),
-            usuario.getFechaNacimiento(),
-            Optional.ofNullable(usuario.getAvatar()),
-            usuario.getSaldoCartera() + precioReembolso,
-            usuario.getEstado()
-        );
-
-
-
-        usuarioRepo.actualizar(usuario.getId(), usuarioForm);
-        usuario = usuarioRepo.obtenerPorId(usuario.getId()).get();
+        // Solo devolver saldo a la cartera si la compra se pagó con cartera Steam
+        if (compra.getMetodopago() == METODOPAGOCOMPRA.CARTERA_STEAM) {
+            var usuarioForm = new UsuarioForm(
+                usuario.getNombre(),
+                usuario.getEmail(),
+                usuario.getContrasenia(),
+                usuario.getNombreReal(),
+                usuario.getPais(),
+                usuario.getFechaNacimiento(),
+                Optional.ofNullable(usuario.getAvatar()),
+                usuario.getSaldoCartera() + precioReembolso,
+                usuario.getEstado()
+            );
+            usuarioRepo.actualizar(usuario.getId(), usuarioForm);
+            usuario = usuarioRepo.obtenerPorId(usuario.getId()).get();
+        }
 
         // Cambiar estado de la compra a reembolsada
         var compraForm = new CompraForm(
@@ -343,6 +347,10 @@ public class CompraControlador {
 
         var usuarioDto = Mapper.mapFrom(usuario);
         var juegoOpt = juegoRepo.obtenerPorId(compra.getIdJuego());
+        if (juegoOpt.isEmpty()) {
+            errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
+            throw new ValidationExcepcion(errores);
+        }
         var juegoDto = Mapper.mapFrom(juegoOpt.get());
 
         return Mapper.mapFrom(compraActualizada.get(), usuarioDto, juegoDto);

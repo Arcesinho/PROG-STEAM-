@@ -43,8 +43,6 @@ public record ReseniaForm (Long id, Long idUsuario, Long idJuego, boolean recome
 
         //Validaciones de recomendado
 
-        // No se requiere validación específica para recomendado (boolean)
-
         //Validaciones de textoResenia
 
         if (textoResenia == null){

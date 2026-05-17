@@ -47,23 +47,23 @@ public class ReseniaControlador {
      */
     public ReseniaDto escribirResenia(Long idUsuario, Long idJuego, boolean recomendado, String textoResenia) throws ValidationExcepcion {
         var form = new ReseniaForm(null, idUsuario, idJuego, recomendado, textoResenia, ESTADORESENIA.PUBLICADA);
-        
+
         var errores = form.validar();
-        
+
         if (bibliotecaRepo.obtenerHoras(idUsuario, idJuego).isEmpty()) {
             errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
         }
-        
+
         if (reseniaRepo.obtenerPorUsuarioYJuego(idUsuario, idJuego).isPresent()) {
             errores.add(new ErrorDto("resenia", ErrorType.DUPLICADO));
         }
-        
+
         if (!errores.isEmpty()) {
             throw new ValidationExcepcion(errores);
         }
-        
+
         var entidad = reseniaRepo.crear(form).orElseThrow();
-        
+
         return Mapper.mapFrom(entidad);
     }
 
@@ -77,7 +77,7 @@ public class ReseniaControlador {
      */
     public ReseniaDto eliminarResenia(Long idResenia, Long idUsuario) throws ValidationExcepcion {
         var errores = new ArrayList<ErrorDto>();
-        
+
         var entidadOpt = reseniaRepo.obtenerPorId(idResenia);
         if (entidadOpt.isEmpty()) {
             errores.add(new ErrorDto("resenia", ErrorType.NO_ENCONTRADO));
@@ -87,15 +87,15 @@ public class ReseniaControlador {
                 errores.add(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO));
             }
         }
-        
+
         if (!errores.isEmpty()) {
             throw new ValidationExcepcion(errores);
         }
-        
+
         var entidad = entidadOpt.get();
-        var form = new ReseniaForm(entidad.getId(), entidad.getIdUsuario(), entidad.getIdJuego(), 
+        var form = new ReseniaForm(entidad.getId(), entidad.getIdUsuario(), entidad.getIdJuego(),
                                    entidad.isRecomendado(), entidad.getTextoResenia(), ESTADORESENIA.ELIMINADA);
-        
+
         var entidadActualizada = reseniaRepo.actualizar(idResenia, form).orElseThrow();
 
 
@@ -113,7 +113,7 @@ public class ReseniaControlador {
      */
     public ReseniaDto ocultarResenia(Long idResenia, Long idUsuario) throws ValidationExcepcion {
         var errores = new ArrayList<ErrorDto>();
-        
+
         var entidadOpt = reseniaRepo.obtenerPorId(idResenia);
         if (entidadOpt.isEmpty()) {
             errores.add(new ErrorDto("resenia", ErrorType.NO_ENCONTRADO));
@@ -127,16 +127,16 @@ public class ReseniaControlador {
                 errores.add(new ErrorDto("estado", ErrorType.FORMATO_INVALIDO));
             }
         }
-        
+
         if (!errores.isEmpty()) {
             throw new ValidationExcepcion(errores);
         }
-        
+
         var entidad = entidadOpt.get();
-        var form = new ReseniaForm(entidad.getId(), entidad.getIdUsuario(), entidad.getIdJuego(), 
-                                   entidad.isRecomendado(), 
+        var form = new ReseniaForm(entidad.getId(), entidad.getIdUsuario(), entidad.getIdJuego(),
+                                   entidad.isRecomendado(),
                                    entidad.getTextoResenia(), ESTADORESENIA.OCULTA);
-        
+
         var entidadActualizada = reseniaRepo.actualizar(idResenia, form).orElseThrow();
 
 
@@ -155,27 +155,29 @@ public class ReseniaControlador {
      */
     public List<ReseniaDto> verReseniasJuego(Long idJuego, String filtro, String orden) {
         var todasResenias = reseniaRepo.obtenerTodos();
-        
+
         //Primero filtramos por juego, estado y tipo de reseña (positiva/negativa)
         var reseniasFiltradas = todasResenias.stream()
                 .filter(r -> r.getIdJuego().equals(idJuego))
                 .filter(r -> r.getEstado() == ESTADORESENIA.PUBLICADA)
-                .filter(r -> filtro == null || 
+                .filter(r -> filtro == null ||
                         (filtro.equals("positivas") && r.isRecomendado()) ||
                         (filtro.equals("negativas") && !r.isRecomendado()))
                 .collect(Collectors.toList());
-        
+
         Comparator<ReseniaEntidad> comparator;
         if ("recientes".equals(orden)) {
 
-            comparator = Comparator.comparing(ReseniaEntidad::getFechaPublicacion).reversed();
+            comparator = Comparator.comparing(ReseniaEntidad::getFechaPublicacion,
+                    Comparator.nullsLast(Comparator.naturalOrder())).reversed();
         } else {
 
-            comparator = Comparator.comparing(ReseniaEntidad::getHorasHastaResenia).reversed();
+            comparator = Comparator.comparing(ReseniaEntidad::getHorasHastaResenia,
+                    Comparator.nullsLast(Comparator.naturalOrder())).reversed();
         }
-        
+
         reseniasFiltradas.sort(comparator);
-        
+
         return reseniasFiltradas.stream()
                 .map(Mapper::mapFrom)
                 .collect(Collectors.toList());
@@ -191,12 +193,12 @@ public class ReseniaControlador {
      */
     public List<ReseniaDto> verReseniasUsuario(Long idUsuario, String filtroEstado) {
         var todasResenias = reseniaRepo.obtenerTodos();
-        
+
         var reseniasFiltradas = todasResenias.stream()
                 .filter(r -> r.getIdUsuario().equals(idUsuario))
                 .filter(r -> filtroEstado == null || r.getEstado().name().equalsIgnoreCase(filtroEstado))
                 .collect(Collectors.toList());
-        
+
         return reseniasFiltradas.stream()
                 .map(Mapper::mapFrom)
                 .collect(Collectors.toList());

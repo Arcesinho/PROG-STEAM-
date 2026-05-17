@@ -50,14 +50,14 @@ public class BibliotecaControlador {
         var usuarioOpt = usuarioRepo.obtenerPorId(idUsuario);
 
         if(usuarioOpt.isEmpty()){
-            errores.add(new ErrorDto("usuarioOpt", ErrorType.NO_ENCONTRADO));
+            errores.add(new ErrorDto("idUsuario", ErrorType.NO_ENCONTRADO));
         }
 
-        boolean usuarioExiste = bibliotecaRepo.obtenerTodos().stream()
+        boolean tieneJuegosEnBiblioteca = bibliotecaRepo.obtenerTodos().stream()
                 .anyMatch(b -> b.getIdUsuario().equals(idUsuario));
 
-        if(!usuarioExiste){
-            errores.add(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO));
+        if(!tieneJuegosEnBiblioteca){
+            errores.add(new ErrorDto("biblioteca", ErrorType.NO_ENCONTRADO));
         }
 
         if(!errores.isEmpty()){
@@ -69,17 +69,16 @@ public class BibliotecaControlador {
                 .filter(b -> b.getIdUsuario().equals(idUsuario)).toList();
 
 
-        var usuarioDto = Mapper.mapFrom(usuarioOpt.orElse(null));
+        var usuarioDto = Mapper.mapFrom(usuarioOpt.get());
 
         return bibliotecas.stream().map(
 
                 b -> {
                     var juegoentity = juegoRepo.obtenerPorId(b.getIdJuego());
-                    var juegoDto = Mapper.mapFrom(juegoentity.orElse(null));
+                    var juegoDto = Mapper.mapFrom(juegoentity.get());
                     return Mapper.mapFrom(b, usuarioDto, juegoDto);
                 }
         ).toList();
-
 
     }
 
@@ -94,14 +93,14 @@ public class BibliotecaControlador {
 
         List<ErrorDto> errores = form.validar();
 
-        var usuario = usuarioRepo.obtenerPorId(form.idUsuario());
-        var juego = juegoRepo.obtenerPorId(form.idJuego());
+        var usuarioOpt = usuarioRepo.obtenerPorId(form.idUsuario());
+        var juegoOpt = juegoRepo.obtenerPorId(form.idJuego());
 
-        if(usuario.isEmpty()){
+        if(usuarioOpt.isEmpty()){
             errores.add(new ErrorDto("Usuario", ErrorType.NO_ENCONTRADO));
         }
 
-        if(juego.isEmpty()){
+        if(juegoOpt.isEmpty()){
             errores.add(new ErrorDto("Juego", ErrorType.NO_ENCONTRADO));
         }
 
@@ -116,15 +115,15 @@ public class BibliotecaControlador {
             throw new ValidationExcepcion(errores);
         }
 
-        var usuarioEntidad = usuario.get();
-        var juegoEntidad = juego.get();
+        var usuarioEntidad = usuarioOpt.get();
+        var juegoEntidad = juegoOpt.get();
 
         Optional<BibliotecaEntidad> nuevaBiblioteca = bibliotecaRepo.crear(form);
 
         var usuarioDto = Mapper.mapFrom(usuarioEntidad);
         var juegoDto = Mapper.mapFrom(juegoEntidad);
 
-        var biblioteca = nuevaBiblioteca.get();
+        var biblioteca = nuevaBiblioteca.orElseThrow(() -> new ValidationExcepcion(List.of(new ErrorDto("biblioteca", ErrorType.NO_ENCONTRADO))));
 
         return Mapper.mapFrom(biblioteca, usuarioDto, juegoDto);
 
@@ -255,7 +254,7 @@ public class BibliotecaControlador {
                 bibliotecaEncontrada.getFechaAdquisicion(), horas, Optional.ofNullable(bibliotecaEncontrada.getUltimaFechaJuego()),
                 bibliotecaEncontrada.getEstadoInstalacion()));
 
-        var bibliotecaActualizadaEntidad = bibliotecaActualizada.get();
+        var bibliotecaActualizadaEntidad = bibliotecaActualizada.orElseThrow(() -> new ValidationExcepcion(List.of(new ErrorDto("biblioteca", ErrorType.NO_ENCONTRADO))));
 
         return Mapper.mapFrom(bibliotecaActualizadaEntidad, usuarioDto, juegoDto);
 
