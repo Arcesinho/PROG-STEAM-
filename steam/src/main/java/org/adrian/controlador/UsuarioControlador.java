@@ -24,6 +24,7 @@ public class UsuarioControlador {
 
     private final IUsuarioRepo usuarioRepo;
 
+
     /**
      * @param usuarioRepo repositorio de usuarios que se usará para las operaciones de persistencia
      */
@@ -66,7 +67,6 @@ public class UsuarioControlador {
 
         Optional<UsuarioEntidad> nuevoUsuario = usuarioRepo.crear(form);
 
-        //Esto es para que el paquete deje de serlo, ya que no se puede pasar un Optional al mapper
 
         var usuarioEntidad = nuevoUsuario.orElseThrow(() -> new ValidationExcepcion(errores));
 
@@ -173,7 +173,7 @@ public class UsuarioControlador {
                 usuarioEncontrado.getContrasenia(),usuarioEncontrado.getNombreReal(),usuarioEncontrado.getPais(),
                 usuarioEncontrado.getFechaNacimiento(), Optional.ofNullable(usuarioEncontrado.getAvatar()), nuevoSaldo, usuarioEncontrado.getEstado()));
 
-        var usuarioADevolver = usuarioActualizado.orElseThrow(() -> new ValidationExcepcion(List.of(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO))));
+        var usuarioADevolver = usuarioActualizado.get();
 
         return Mapper.mapFrom(usuarioADevolver);
     }

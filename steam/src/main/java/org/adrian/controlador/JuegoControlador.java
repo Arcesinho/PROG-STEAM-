@@ -102,8 +102,9 @@ public class JuegoControlador {
         if(!errores.isEmpty()){
             throw new ValidationExcepcion(errores);
         }
+        var juegoEncontrado = JuegoABuscarOpt.get();
 
-        return Mapper.mapFrom(JuegoABuscarOpt.orElse(null)); //Falta estadisticas y reseñas destacadas
+        return Mapper.mapFrom(juegoEncontrado); 
     }
 
     /**
@@ -139,7 +140,7 @@ public class JuegoControlador {
         var JuegoActualizado = juegoRepo.actualizar(id, new JuegoForm(JuegoEncontrado.getTituloJuego(), Optional.ofNullable(JuegoEncontrado.getDescripcion()), JuegoEncontrado.getDesarrollador(), JuegoEncontrado.getFechaLanzamiento(),
                 nuevoPrecio, Optional.of(descuento), JuegoEncontrado.getPegi(), Optional.ofNullable(JuegoEncontrado.getIdiomas()), JuegoEncontrado.getEstado(), JuegoEncontrado.getCategoria()));
 
-        var JuegoADevolver = JuegoActualizado.orElseThrow(() -> new ValidationExcepcion(List.of(new ErrorDto("juego", ErrorType.NO_ENCONTRADO))));
+        var JuegoADevolver = JuegoActualizado.get();
 
         return Mapper.mapFrom(JuegoADevolver);
     }
@@ -175,7 +176,7 @@ public class JuegoControlador {
         var JuegoActualizado = juegoRepo.actualizar(id, new JuegoForm(JuegoEncontrado.getTituloJuego(), Optional.ofNullable(JuegoEncontrado.getDescripcion()), JuegoEncontrado.getDesarrollador(), JuegoEncontrado.getFechaLanzamiento(),
                 JuegoEncontrado.getPrecioBase(), Optional.of(JuegoEncontrado.getDescuentoActual()), JuegoEncontrado.getPegi(), Optional.ofNullable(JuegoEncontrado.getIdiomas()), estadojuego, JuegoEncontrado.getCategoria()));
 
-        var JuegoADevolver = JuegoActualizado.orElseThrow(() -> new ValidationExcepcion(List.of(new ErrorDto("juego", ErrorType.NO_ENCONTRADO))));
+        var JuegoADevolver = JuegoActualizado.get();
 
         return Mapper.mapFrom(JuegoADevolver);
 

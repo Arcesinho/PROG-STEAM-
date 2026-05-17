@@ -26,35 +26,34 @@ public class ReseniaControlador {
     private final IReseniaRepo reseniaRepo;
 
     /**
-     * @param bibliotecaRepo repositorio de biblioteca (para verificar que el usuario posee el juego)
+     * @param bibliotecaRepo repositorio de biblioteca (para verificar que el
+     *                       usuario posee el juego)
      * @param reseniaRepo    repositorio de reseñas
      */
-    public ReseniaControlador( IBibliotecaRepo bibliotecaRepo, IReseniaRepo reseniaRepo) {
+    public ReseniaControlador(IBibliotecaRepo bibliotecaRepo, IReseniaRepo reseniaRepo) {
         this.bibliotecaRepo = bibliotecaRepo;
         this.reseniaRepo = reseniaRepo;
     }
 
     /**
-     * Publica una nueva reseña de un juego. El usuario debe tener el juego en su biblioteca
+     * Publica una nueva reseña de un juego. El usuario debe tener el juego en su
+     * biblioteca
      * y no haber escrito una reseña previa para ese juego.
      *
-     * @param idUsuario    identificador del usuario autor
-     * @param idJuego      identificador del juego reseñado
-     * @param recomendado  {@code true} si el usuario recomienda el juego, {@code false} en caso contrario
-     * @param textoResenia texto de la reseña (50–8000 caracteres)
+     * @param form formulario
      * @return DTO de la reseña publicada
-     * @throws ValidationExcepcion si el usuario no posee el juego, ya ha escrito una reseña o el texto no es válido
+     * @throws ValidationExcepcion si el usuario no posee el juego, ya ha escrito
+     *                             una reseña o el texto no es válido
      */
-    public ReseniaDto escribirResenia(Long idUsuario, Long idJuego, boolean recomendado, String textoResenia) throws ValidationExcepcion {
-        var form = new ReseniaForm(null, idUsuario, idJuego, recomendado, textoResenia, ESTADORESENIA.PUBLICADA);
+    public ReseniaDto escribirResenia(ReseniaForm form) throws ValidationExcepcion {
 
         var errores = form.validar();
 
-        if (bibliotecaRepo.obtenerHoras(idUsuario, idJuego).isEmpty()) {
+        if (bibliotecaRepo.obtenerHoras(form.idUsuario(), form.idJuego()).isEmpty()) {
             errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
         }
 
-        if (reseniaRepo.obtenerPorUsuarioYJuego(idUsuario, idJuego).isPresent()) {
+        if (reseniaRepo.obtenerPorUsuarioYJuego(form.idUsuario(), form.idJuego()).isPresent()) {
             errores.add(new ErrorDto("resenia", ErrorType.DUPLICADO));
         }
 
@@ -62,9 +61,9 @@ public class ReseniaControlador {
             throw new ValidationExcepcion(errores);
         }
 
-        var entidad = reseniaRepo.crear(form).orElseThrow();
+        var entidad = reseniaRepo.crear(form);
 
-        return Mapper.mapFrom(entidad);
+        return Mapper.mapFrom(entidad.get());
     }
 
     /**
@@ -78,28 +77,28 @@ public class ReseniaControlador {
     public ReseniaDto eliminarResenia(Long idResenia, Long idUsuario) throws ValidationExcepcion {
         var errores = new ArrayList<ErrorDto>();
 
-        var entidadOpt = reseniaRepo.obtenerPorId(idResenia);
-        if (entidadOpt.isEmpty()) {
+        var reseniaOpt = reseniaRepo.obtenerPorId(idResenia);
+        if (reseniaOpt.isEmpty()) {
             errores.add(new ErrorDto("resenia", ErrorType.NO_ENCONTRADO));
-        } else {
-            var entidad = entidadOpt.get();
-            if (!entidad.getIdUsuario().equals(idUsuario)) {
-                errores.add(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO));
-            }
+        } 
+
+        var resenia = reseniaOpt.get();
+
+        if (!resenia.getIdUsuario().equals(idUsuario)) {
+            errores.add(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO));
         }
 
-        if (!errores.isEmpty()) {
+        if(!errores.isEmpty()){
             throw new ValidationExcepcion(errores);
+
         }
 
-        var entidad = entidadOpt.get();
-        var form = new ReseniaForm(entidad.getId(), entidad.getIdUsuario(), entidad.getIdJuego(),
-                                   entidad.isRecomendado(), entidad.getTextoResenia(), ESTADORESENIA.ELIMINADA);
+        var form = new ReseniaForm(resenia.getId(), resenia.getIdUsuario(), resenia.getIdJuego(),
+            resenia.isRecomendado(), resenia.getTextoResenia(), ESTADORESENIA.ELIMINADA);
 
-        var entidadActualizada = reseniaRepo.actualizar(idResenia, form).orElseThrow();
+        var reseniaActualizada = reseniaRepo.actualizar(idResenia, form);
 
-
-        return Mapper.mapFrom(entidadActualizada);
+        return Mapper.mapFrom(reseniaActualizada.get());
     }
 
     /**
@@ -114,40 +113,43 @@ public class ReseniaControlador {
     public ReseniaDto ocultarResenia(Long idResenia, Long idUsuario) throws ValidationExcepcion {
         var errores = new ArrayList<ErrorDto>();
 
-        var entidadOpt = reseniaRepo.obtenerPorId(idResenia);
-        if (entidadOpt.isEmpty()) {
+        var reseniaOpt = reseniaRepo.obtenerPorId(idResenia);
+        if (reseniaOpt.isEmpty()) {
             errores.add(new ErrorDto("resenia", ErrorType.NO_ENCONTRADO));
 
-        } else {
-            var entidad = entidadOpt.get();
-            if (!entidad.getIdUsuario().equals(idUsuario)) {
-                errores.add(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO));
-            }
-            if (entidad.getEstado() != ESTADORESENIA.PUBLICADA) {
-                errores.add(new ErrorDto("estado", ErrorType.FORMATO_INVALIDO));
-            }
+        } 
+        var resenia = reseniaOpt.get();
+            
+        if (!resenia.getIdUsuario().equals(idUsuario)) {
+            errores.add(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO));
         }
+
+        if (resenia.getEstado() != ESTADORESENIA.PUBLICADA) {
+            errores.add(new ErrorDto("estado", ErrorType.FORMATO_INVALIDO));
+        }
+        
 
         if (!errores.isEmpty()) {
             throw new ValidationExcepcion(errores);
         }
 
-        var entidad = entidadOpt.get();
-        var form = new ReseniaForm(entidad.getId(), entidad.getIdUsuario(), entidad.getIdJuego(),
-                                   entidad.isRecomendado(),
-                                   entidad.getTextoResenia(), ESTADORESENIA.OCULTA);
+        var form = new ReseniaForm(resenia.getId(), resenia.getIdUsuario(), resenia.getIdJuego(),
+                                   resenia.isRecomendado(),
+                                   resenia.getTextoResenia(), ESTADORESENIA.OCULTA);
 
-        var entidadActualizada = reseniaRepo.actualizar(idResenia, form).orElseThrow();
+        var reseniaActualizada = reseniaRepo.actualizar(idResenia, form);
 
 
-        return Mapper.mapFrom(entidadActualizada);
+        return Mapper.mapFrom(reseniaActualizada.get());
     }
 
     /**
-     * Devuelve las reseñas publicadas de un juego con soporte de filtro y ordenación.
+     * Devuelve las reseñas publicadas de un juego con soporte de filtro y
+     * ordenación.
      *
      * @param idJuego identificador del juego
-     * @param filtro  {@code "positivas"} muestra solo recomendadas, {@code "negativas"} solo no recomendadas,
+     * @param filtro  {@code "positivas"} muestra solo recomendadas,
+     *                {@code "negativas"} solo no recomendadas,
      *                {@code null} muestra todas
      * @param orden   {@code "recientes"} ordena de más nueva a más antigua;
      *                cualquier otro valor ordena por horas jugadas de mayor a menor
@@ -156,7 +158,6 @@ public class ReseniaControlador {
     public List<ReseniaDto> verReseniasJuego(Long idJuego, String filtro, String orden) {
         var todasResenias = reseniaRepo.obtenerTodos();
 
-        //Primero filtramos por juego, estado y tipo de reseña (positiva/negativa)
         var reseniasFiltradas = todasResenias.stream()
                 .filter(r -> r.getIdJuego().equals(idJuego))
                 .filter(r -> r.getEstado() == ESTADORESENIA.PUBLICADA)
@@ -167,11 +168,9 @@ public class ReseniaControlador {
 
         Comparator<ReseniaEntidad> comparator;
         if ("recientes".equals(orden)) {
-
             comparator = Comparator.comparing(ReseniaEntidad::getFechaPublicacion,
                     Comparator.nullsLast(Comparator.naturalOrder())).reversed();
         } else {
-
             comparator = Comparator.comparing(ReseniaEntidad::getHorasHastaResenia,
                     Comparator.nullsLast(Comparator.naturalOrder())).reversed();
         }
@@ -184,10 +183,12 @@ public class ReseniaControlador {
     }
 
     /**
-     * Devuelve todas las reseñas escritas por un usuario, con filtro opcional por estado.
+     * Devuelve todas las reseñas escritas por un usuario, con filtro opcional por
+     * estado.
      *
      * @param idUsuario    identificador del usuario
-     * @param filtroEstado nombre del estado a filtrar (p. ej. {@code "PUBLICADA"}, {@code "OCULTA"},
+     * @param filtroEstado nombre del estado a filtrar (p. ej. {@code "PUBLICADA"},
+     *                     {@code "OCULTA"},
      *                     {@code "ELIMINADA"}); {@code null} para obtener todas
      * @return lista de DTOs de reseñas del usuario
      */
@@ -197,7 +198,7 @@ public class ReseniaControlador {
         var reseniasFiltradas = todasResenias.stream()
                 .filter(r -> r.getIdUsuario().equals(idUsuario))
                 .filter(r -> filtroEstado == null || r.getEstado().name().equalsIgnoreCase(filtroEstado))
-                .collect(Collectors.toList());
+                .toList();
 
         return reseniasFiltradas.stream()
                 .map(Mapper::mapFrom)

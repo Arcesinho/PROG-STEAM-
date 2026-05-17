@@ -57,14 +57,8 @@ public class CompraControlador {
      * @throws ValidationExcepcion si alguna validación falla
      */
     public CompraDto realizarCompraJuego(CompraForm form) throws ValidationExcepcion{
-        List<ErrorDto> errores = new ArrayList<>();
-        
-        if (form == null) {
-            errores.add(new ErrorDto("formulario", ErrorType.REQUERIDO));
-            throw new ValidationExcepcion(errores);
-        }
-        
-        errores.addAll(form.validar());
+       
+        var errores = form.validar();
 
         var usuarioOpt = usuarioRepo.obtenerPorId(form.idUsuario());
         var juegoOpt = juegoRepo.obtenerPorId(form.idJuego());
@@ -76,17 +70,12 @@ public class CompraControlador {
             errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
         }
 
-        // Verificar compra duplicada: usuario no puede comprar el mismo juego dos veces
         List<CompraEntidad> comprasUsuario = compraRepo.obtenerPorUsuario(form.idUsuario());
         boolean compraDuplicada = comprasUsuario.stream()
                 .anyMatch(c -> c.getIdJuego().equals(form.idJuego()));
 
         if (compraDuplicada) {
             errores.add(new ErrorDto("compra", ErrorType.DUPLICADO));
-        }
-
-        if (!errores.isEmpty()) {
-            throw new ValidationExcepcion(errores);
         }
 
         var usuarioEntidad = usuarioOpt.get();
@@ -100,7 +89,6 @@ public class CompraControlador {
             errores.add(new ErrorDto("juego", ErrorType.JUEGO_NO_DISPONIBLE));
         }
 
-        // Validación de método de pago y saldo
         if (form.metodopago() == METODOPAGOCOMPRA.CARTERA_STEAM) {
             if (usuarioEntidad.getSaldoCartera() < juegoEntidad.getPrecioBase()) {
                 errores.add(new ErrorDto("saldoCartera", ErrorType.SALDO_INSUFICIENTE));
@@ -109,15 +97,15 @@ public class CompraControlador {
             errores.add(new ErrorDto("metodoPago", ErrorType.REQUERIDO));
         }
 
-        if (!errores.isEmpty()) {
-            throw new ValidationExcepcion(errores);
-        }
 
-        // Crear la compra con estado PENDIENTE
         Optional<CompraEntidad> nuevaCompra = compraRepo.crear(form);
         
         if (nuevaCompra.isEmpty()) {
-            errores.add(new ErrorDto("compra", ErrorType.NO_ENCONTRADO));
+            errores.add(new ErrorDto("compra", ErrorType.NO_ENCONTRADO));   
+        }
+
+
+        if (!errores.isEmpty()) {
             throw new ValidationExcepcion(errores);
         }
 
@@ -147,10 +135,6 @@ public class CompraControlador {
             errores.add(new ErrorDto("compra", ErrorType.NO_ENCONTRADO));
         }
 
-        if (!errores.isEmpty()) {
-            throw new ValidationExcepcion(errores);
-        }
-
         var compra = compraOpt.get();
 
         if (compra.getEstado() != ESTADOCOMPRA.PENDIENTE) {
@@ -160,7 +144,6 @@ public class CompraControlador {
         var usuarioOpt = usuarioRepo.obtenerPorId(compra.getIdUsuario());
         if (usuarioOpt.isEmpty()) {
             errores.add(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO));
-            throw new ValidationExcepcion(errores);
         }
 
         var usuario = usuarioOpt.get();
@@ -172,14 +155,9 @@ public class CompraControlador {
                 errores.add(new ErrorDto("saldoCartera", ErrorType.SALDO_INSUFICIENTE));
             }
         } else {
-            // for other methods, assume datosPago is required
             if (datosPago == null || datosPago.isEmpty()) {
                 errores.add(new ErrorDto("datosPago", ErrorType.REQUERIDO));
             }
-        }
-
-        if (!errores.isEmpty()) {
-            throw new ValidationExcepcion(errores);
         }
 
         if (compra.getMetodopago() == METODOPAGOCOMPRA.CARTERA_STEAM) {
@@ -210,12 +188,18 @@ public class CompraControlador {
         var updatedCompraOpt = compraRepo.actualizar(compra.getId(), compraForm);
 
         var usuarioDto = Mapper.mapFrom(usuario);
+
         var juegoOpt = juegoRepo.obtenerPorId(compra.getIdJuego());
+
         if (juegoOpt.isEmpty()) {
             errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
+        }
+
+        var juegoDto = Mapper.mapFrom(juegoOpt.get());
+
+        if (!errores.isEmpty()) {
             throw new ValidationExcepcion(errores);
         }
-        var juegoDto = Mapper.mapFrom(juegoOpt.get());
 
         return Mapper.mapFrom(updatedCompraOpt.get(), usuarioDto, juegoDto);
     }
@@ -231,16 +215,15 @@ public class CompraControlador {
         List<ErrorDto> errores = new ArrayList<>();
 
         var compraOpt = compraRepo.obtenerPorId(idCompra);
+
         if (compraOpt.isEmpty()) {
             errores.add(new ErrorDto("compra", ErrorType.NO_ENCONTRADO));
-            throw new ValidationExcepcion(errores);
         }
 
         var compra = compraOpt.get();
 
         if (!compra.getIdUsuario().equals(idUsuario)) {
             errores.add(new ErrorDto("compra", ErrorType.NO_ENCONTRADO));
-            throw new ValidationExcepcion(errores);
         }
 
         var usuarioOpt = usuarioRepo.obtenerPorId(idUsuario);
@@ -258,7 +241,7 @@ public class CompraControlador {
         var usuarioDto = Mapper.mapFrom(usuarioOpt.orElse(null));
         var juegoDto = Mapper.mapFrom(juegoOpt.orElse(null));
 
-        return Mapper.mapFrom(compraOpt.orElse(null), usuarioDto, juegoDto);
+        return Mapper.mapFrom(compra, usuarioDto, juegoDto);
     }
 
     /**
@@ -276,11 +259,9 @@ public class CompraControlador {
         var compraOpt = compraRepo.obtenerPorId(idCompra);
         if (compraOpt.isEmpty()) {
             errores.add(new ErrorDto("compra", ErrorType.NO_ENCONTRADO));
-            throw new ValidationExcepcion(errores);
         }
         var compra = compraOpt.get();
 
-        // Validar que la compra esté completada
         if (compra.getEstado() != ESTADOCOMPRA.COMPLETADA) {
             errores.add(new ErrorDto("compra", ErrorType.FORMATO_INVALIDO));
         }
@@ -303,14 +284,10 @@ public class CompraControlador {
             }
         }
 
-        if (!errores.isEmpty()) {
-            throw new ValidationExcepcion(errores);
-        }
 
         var usuarioOpt = usuarioRepo.obtenerPorId(compra.getIdUsuario());
         if (usuarioOpt.isEmpty()) {
             errores.add(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO));
-            throw new ValidationExcepcion(errores);
         }
 
         var usuario = usuarioOpt.get();
@@ -349,8 +326,12 @@ public class CompraControlador {
         var juegoOpt = juegoRepo.obtenerPorId(compra.getIdJuego());
         if (juegoOpt.isEmpty()) {
             errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
+        }
+
+        if (!errores.isEmpty()) {
             throw new ValidationExcepcion(errores);
         }
+
         var juegoDto = Mapper.mapFrom(juegoOpt.get());
 
         return Mapper.mapFrom(compraActualizada.get(), usuarioDto, juegoDto);

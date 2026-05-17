@@ -45,7 +45,7 @@ public class BibliotecaControlador {
      */
     public List<BibliotecaDto> verBibliotecaPersonal(Long idUsuario) throws ValidationExcepcion {
 
-        List<ErrorDto> errores = new ArrayList<ErrorDto>();
+        List<ErrorDto> errores = new ArrayList<>();
 
         var usuarioOpt = usuarioRepo.obtenerPorId(idUsuario);
 
@@ -69,13 +69,13 @@ public class BibliotecaControlador {
                 .filter(b -> b.getIdUsuario().equals(idUsuario)).toList();
 
 
-        var usuarioDto = Mapper.mapFrom(usuarioOpt.get());
+        var usuarioDto = Mapper.mapFrom(usuarioOpt.orElse(null));
 
         return bibliotecas.stream().map(
 
                 b -> {
                     var juegoentity = juegoRepo.obtenerPorId(b.getIdJuego());
-                    var juegoDto = Mapper.mapFrom(juegoentity.get());
+                    var juegoDto = Mapper.mapFrom(juegoentity.orElse(null));
                     return Mapper.mapFrom(b, usuarioDto, juegoDto);
                 }
         ).toList();
@@ -123,7 +123,7 @@ public class BibliotecaControlador {
         var usuarioDto = Mapper.mapFrom(usuarioEntidad);
         var juegoDto = Mapper.mapFrom(juegoEntidad);
 
-        var biblioteca = nuevaBiblioteca.orElseThrow(() -> new ValidationExcepcion(List.of(new ErrorDto("biblioteca", ErrorType.NO_ENCONTRADO))));
+        var biblioteca = nuevaBiblioteca.get();
 
         return Mapper.mapFrom(biblioteca, usuarioDto, juegoDto);
 
@@ -139,7 +139,7 @@ public class BibliotecaControlador {
      */
     public BibliotecaDto eliminarJuegoBiblioteca(Long idJuego, Long idUsuario) throws ValidationExcepcion{
 
-        List<ErrorDto> errores = new ArrayList<ErrorDto>();
+        List<ErrorDto> errores = new ArrayList<>();
 
 
         boolean usuarioExiste = bibliotecaRepo.obtenerTodos().stream()
@@ -254,7 +254,7 @@ public class BibliotecaControlador {
                 bibliotecaEncontrada.getFechaAdquisicion(), horas, Optional.ofNullable(bibliotecaEncontrada.getUltimaFechaJuego()),
                 bibliotecaEncontrada.getEstadoInstalacion()));
 
-        var bibliotecaActualizadaEntidad = bibliotecaActualizada.orElseThrow(() -> new ValidationExcepcion(List.of(new ErrorDto("biblioteca", ErrorType.NO_ENCONTRADO))));
+        var bibliotecaActualizadaEntidad = bibliotecaActualizada.get();
 
         return Mapper.mapFrom(bibliotecaActualizadaEntidad, usuarioDto, juegoDto);
 
